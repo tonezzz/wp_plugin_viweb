@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  apache2:
+    profile: [dev,prod]
+    hostname: apache2
+    image: ubuntu/apache2:2.4-20.04_edge
+    container_NAME: apache2
+    environments:
+    - TZ: Asia/Bangkok
+    ports:
+    - 80:80
