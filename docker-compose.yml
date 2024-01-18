@@ -69,3 +69,12 @@ services:
       - TZ=${TIMEZONE}
     volumes:
       - ./dockers/storage/redis-data/:/data/
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    restart: ${RESTART_POLICY}
+    ports:
+    - '3000:3000'
+    volumes:
+      - ./dockers/storage/grafana-data:/var/lib/grafana
