@@ -35,6 +35,7 @@ services:
       - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
     depends_on:
       - mariadb
+
   mariadb:
     image: mariadb:latest
     container_name: ${PROJECT_NAME}_mariadb
@@ -60,6 +61,7 @@ services:
       - PMA_HOST=mariadb
     depends_on:
       - mariadb
+
   redis:
     platform: linux/x86_64
     image: redis:alpine
@@ -72,10 +74,12 @@ services:
       - ./dockers/storage/redis-data/:/data/
 
   grafana:
-    image: grafana/grafana-enterprise
+    image: ${COMPOSE_PROJECT_NAME}_grafana/grafana-enterprise
     container_name: grafana
     restart: ${RESTART_POLICY}
+    environment:
+      - GCLOUD_HOSTED_METRICS_URL=
     ports:
-    - '3000:3000'
+      - '3000:3000'
     volumes:
-      - ./dockers/storage/grafana-data:/var/lib/grafan
+      - ./dockers/storage/grafana-data:/var/lib/grafana
