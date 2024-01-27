@@ -72,14 +72,3 @@ services:
       - TZ=${TIMEZONE}
     volumes:
       - ./dockers/storage/redis-data/:/data/
-
-  grafana:
-    image: ${COMPOSE_PROJECT_NAME}_grafana/grafana-enterprise
-    container_name: grafana
-    restart: ${RESTART_POLICY}
-    environment:
-      - GCLOUD_HOSTED_METRICS_URL=
-    ports:
-      - '3000:3000'
-    volumes:
-      - ./dockers/storage/grafana-data:/var/lib/grafana
