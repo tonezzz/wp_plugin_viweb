@@ -1,0 +1,4 @@
+Host github.com
+  Hostname github.com
+  AddKeysToAgent yes
+  IdentityFile ~/.ssh/thakarn-web

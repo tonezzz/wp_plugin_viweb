@@ -12,6 +12,8 @@ services:
       - ./wordpress:/usr/local/apache2/htdocs
       - ./dockers/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
       - ./dockers/apache/httpd-vhosts.conf:/usr/local/apache2/conf/vhosts/localhost.conf
+      - ./sockers/apache/ssl/server.crt:/usr/local/apache2/conf/server.crt
+      - ./sockers/apache/ssl/server.key:/usr/local/apache2/conf/server.key
     depends_on:
       - php-fpm
   php-fpm:
@@ -62,7 +64,7 @@ services:
   redis:
     platform: linux/x86_64
     image: redis:alpine
-    container_name: ${COMPOSE_PROJECT_NAME}_redis
+    container_name: ${PROJECT_NAME}_redis
     restart: ${RESTART_POLICY}
     entrypoint: redis-server --appendonly yes
     environment:
