@@ -1,19 +1,36 @@
-version: "3"
+version: "3.8"
 
 services:
   apache:
-    image: httpd:2.4
+    #image: httpd:2.4
+    build:
+      context: ./dockers/apache
+      dockerfile: Dockerfile
     container_name: ${PROJECT_NAME}_apache
     mem_limit: 512m
+    #entrypoint: []
+    #command:
+    #  - /bin/bash
+    #  - -c
+    #  - |
+    #    apt update
+    #    apt install -y certbot python3-certbot-apache lynx
+    #    httpd -D FOREGROUND
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./wordpress:/usr/local/apache2/htdocs
       - ./dockers/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
-      - ./dockers/apache/httpd-vhosts.conf:/usr/local/apache2/conf/vhosts/localhost.conf
-      - ./sockers/apache/ssl/server.crt:/usr/local/apache2/conf/server.crt
-      - ./sockers/apache/ssl/server.key:/usr/local/apache2/conf/server.key
+      - ./dockers/apache/httpd-ssl.conf/usr/local/apache2/conf/extra/httpd-ssl.conf
+      - ./dockers/apache/sites-enabled:/etc/apache2/sites-enabled
+      - ./persistent-data/letsencrypt:/etc/letsencrypt
+      #- ./dockers/apache/ssl/server.crt:/usr/local/apache2/conf/server.crt
+      #- ./dockers/apache/ssl/server.key:/usr/local/apache2/conf/server.key
+      - ./persistent-data/letsencrypt/live/thakarn.gizmo-thailand.com/fullchain.pem:/usr/local/apache2/conf/server.crt
+      - ./persistent-data/letsencrypt/live/thakarn.gizmo-thailand.com/privkey.pem:/usr/local/apache2/conf/server.key
+      - ./tmp:/var/log/letsencrypt/
+      #- ./dockers/apache/init:/init
     depends_on:
       - php-fpm
   php-fpm:
@@ -36,10 +53,12 @@ services:
       - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
     depends_on:
       - mariadb
+
   mariadb:
     image: mariadb:latest
     container_name: ${PROJECT_NAME}_mariadb
     mem_limit: 512m
+    #entrypoint: mysqld --tc-heuristic-recover
     volumes:
       - ./persistent-data/mysql:/var/lib/mysql
       - ./initdb:/docker-entrypoint-initdb.d
