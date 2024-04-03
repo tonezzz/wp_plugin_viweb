@@ -1,0 +1,76 @@
+@font-face{
+  font-family:icomoon;
+  src:url(../fonts/icomoon.eot?fzv6fp);
+  src:url(../fonts/icomoon.eot?fzv6fp#iefix) format("embedded-opentype"),url(../fonts/icomoon.ttf?fzv6fp) format("truetype"),url(../fonts/icomoon.woff?fzv6fp) format("woff"),url(../fonts/icomoon.svg?fzv6fp#icomoon) format("svg");
+  font-weight:400;
+  font-style:normal;
+  font-display:block;
+}
+
+[class*=" icon-"],[class^=icon-]{
+  font-family:icomoon;
+  speak:none;
+  font-style:normal;
+  font-weight:400;
+  font-variant:normal;
+  text-transform:none;
+  line-height:1;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.icon-tiktok:before {
+  content: "\e910";
+}
+.icon-x-twitter:before {
+  content: "\e911";
+}
+.icon-arrow-left:before{
+  content:"\e900";
+}
+.icon-arrow-right:before{
+  content:"\e901";
+}
+.icon-cart:before{
+  content:"\e902";
+}
+.icon-email:before{
+  content:"\e903";
+}
+.icon-heart:before{
+  content:"\e904";
+}
+.icon-phone:before{
+  content:"\e905";
+}
+.icon-play-video:before{
+  content:"\e906";
+}
+.icon-plus:before{
+  content:"\e907";
+}
+.icon-search:before{
+  content:"\e908";
+}
+.icon-user:before{
+  content:"\e909";
+}
+.icon-star:before{
+  content:"\e90a";
+}
+.icon-accessories:before{
+  content:"\e90b";
+}
+.icon-clothing:before{
+  content:"\e90c";
+}
+.icon-designer:before{
+  content:"\e90d";
+}
+.icon-shoes:before{
+  content:"\e90f";
+}
+.icon-hats:before{
+  content:"\e90e";
+}
+
