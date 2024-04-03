@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  apache:
+    image: httpd:2.4
+    container_name: ${PROJECT_NAME}_apache
+    mem_limit: 512m
+    #entrypoint: sleep infinity
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./dockers/apache/ssl/server.crt:/usr/local/apache2/conf/server.crt
+      - ./dockers/apache/ssl/server.key:/usr/local/apache2/conf/server.key
+      - ./wordpress:/usr/local/apache2/htdocs
+      - ./dockers/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./dockers/apache/httpd-ssl.conf/usr/local/apache2/conf/extra/httpd-ssl.conf
+      - ./dockers/apache/httpd-vhosts.conf:/usr/local/apache2/conf/vhosts/localhost.conf
+    #docker exec -i wp_plugin_viweb_apache /bin/sh cat /usr/local/apache2/conf/server.crt
+    depends_on:
+      - php-fpm
