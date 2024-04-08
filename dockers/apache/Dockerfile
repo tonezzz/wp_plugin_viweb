@@ -1,10 +1,10 @@
 FROM httpd:2.4
 
-RUN apt update && apt install -y certbot python3-certbot-apache lynx
+RUN apt update && apt install -y certbot python3-certbot-apache lynx php-zip
 
-RUN groupadd nc-user
-RUN useradd nc-user -g nc-user
-RUN adduser root nc-user
+#RUN groupadd nc-user
+#RUN useradd nc-user -g nc-user
+#RUN adduser root nc-user
 
 #RUN certbot certonly -v --agree-tos --webroot \
 #    -d thakarn.gizmo-thailand.com \
@@ -29,3 +29,6 @@ RUN adduser root nc-user
 
 #git config --global user.name "Tonezzz"
 #git config --global user.email "tonezzz@hotmail.com"
+
+#PHP
+#docker exec -i wp_plugin_viweb_apache ls -la /etc/ssl

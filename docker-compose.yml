@@ -33,6 +33,7 @@ services:
       #- ./dockers/apache/init:/init
     depends_on:
       - php-fpm
+  
   php-fpm:
     build:
       context: ./dockers/php-fpm
@@ -78,8 +79,14 @@ services:
     environment:
       - PMA_ARBITRARY=1
       - PMA_HOST=mariadb
+      #- TZ
+      #- UPLOAD_LIMIT=200M
+    volumes:
+      - ./persistent-data/letsencrypt/live/thakarn.gizmo-thailand.com/fullchain.pem:/usr/local/apache2/conf/server.crt
+      - ./persistent-data/letsencrypt/live/thakarn.gizmo-thailand.com/privkey.pem:/usr/local/apache2/conf/server.key
     depends_on:
       - mariadb
+
   redis:
     platform: linux/x86_64
     image: redis:alpine
