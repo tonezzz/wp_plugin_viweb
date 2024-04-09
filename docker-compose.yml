@@ -24,12 +24,13 @@ services:
       - ./dockers/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
       - ./dockers/apache/httpd-ssl.conf/usr/local/apache2/conf/extra/httpd-ssl.conf
       - ./dockers/apache/sites-enabled:/etc/apache2/sites-enabled
-      - ./persistent-data/letsencrypt:/etc/letsencrypt
-      #- ./dockers/apache/ssl/server.crt:/usr/local/apache2/conf/server.crt
-      #- ./dockers/apache/ssl/server.key:/usr/local/apache2/conf/server.key
+      - ./persistent-data/uploads:/usr/local/apache2/htdocs/wp-content/uploads
+      - ./persistent-data/letsencrypt:/etc/letsencrypt1
       - ./persistent-data/letsencrypt/live/thakarn.gizmo-thailand.com/fullchain.pem:/usr/local/apache2/conf/server.crt
       - ./persistent-data/letsencrypt/live/thakarn.gizmo-thailand.com/privkey.pem:/usr/local/apache2/conf/server.key
-      - ./tmp:/var/log/letsencrypt/
+      #- ./dockers/apache/ssl/server.crt:/usr/local/apache2/conf/server.crt
+      #- ./dockers/apache/ssl/server.key:/usr/local/apache2/conf/server.key
+      #- ./tmp:/var/log/letsencrypt/
       #- ./dockers/apache/init:/init
     depends_on:
       - php-fpm
