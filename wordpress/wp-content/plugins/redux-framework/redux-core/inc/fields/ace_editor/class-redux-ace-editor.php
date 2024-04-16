@@ -5,7 +5,6 @@
  * @package     Redux Framework/Fields
  * @subpackage  ACE_Editor
  * @version     3.0.0
- * @noinspection PhpIgnoredClassAliasDeclaration
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -67,7 +66,8 @@ if ( ! class_exists( 'Redux_Ace_Editor', false ) ) {
 					data-theme="<?php echo esc_attr( $this->field['theme'] ); ?>"><?php echo esc_textarea( $this->value ); ?></textarea>
 				<pre
 					id="<?php echo esc_attr( $this->field['id'] ); ?>-editor"
-					class="ace-editor-area"><?php echo esc_html( $this->value ); ?></pre>
+					class="ace-editor-area"><?php echo esc_html( $this->value ); ?>
+				</pre>
 			</div>
 			<?php
 		}
@@ -83,7 +83,7 @@ if ( ! class_exists( 'Redux_Ace_Editor', false ) ) {
 		public function enqueue() {
 			if ( $this->parent->args['dev_mode'] ) {
 				wp_enqueue_style(
-					'redux-field-ace-editor',
+					'redux-field-ace-editor-css',
 					Redux_Core::$url . 'inc/fields/ace_editor/redux-ace-editor.css',
 					array(),
 					$this->timestamp
@@ -91,19 +91,18 @@ if ( ! class_exists( 'Redux_Ace_Editor', false ) ) {
 			}
 
 			if ( ! wp_script_is( 'ace-editor-js' ) ) {
-				wp_enqueue_script(
-				// Redux_CDN::enqueue_script(
+				Redux_CDN::enqueue_script(
 					'ace-editor-js',
 					// phpcs:ignore Generic.Strings.UnnecessaryStringConcat
-					apply_filters( 'redux/' . $this->parent->args['opt_name'] . 'fields/ace/script', '//' . 'cdnjs' . '.cloudflare' . '.com/ajax/libs/ace/1.23.0/ace.min.js' ),
+					'//' . 'cdnjs' . '.cloudflare' . '.com/ajax/libs/ace/1.4.13/ace.js',
 					array( 'jquery' ),
-					'1.23.0',
+					'1.4.12',
 					true
 				);
 			}
 
 			wp_enqueue_script(
-				'redux-field-ace-editor',
+				'redux-field-ace-editor-js',
 				Redux_Core::$url . 'inc/fields/ace_editor/redux-ace-editor' . Redux_Functions::is_min() . '.js',
 				array( 'jquery', 'ace-editor-js', 'redux-js' ),
 				$this->timestamp,

@@ -35,13 +35,13 @@ if ( ! class_exists( 'Redux_Social_Profiles_Widget' ) ) {
 		/**
 		 * Redux_Social_Profiles_Widget constructor.
 		 *
-		 * @param object $redux   ReduxFramework object.
+		 * @param object $parent   ReduxFramework object.
 		 * @param string $field_id Field ID.
 		 */
-		public function __construct( $redux, string $field_id ) {
+		public function __construct( $parent, string $field_id ) {
 			return;
 
-			$this->parent   = $redux;
+			$this->parent   = $parent;
 			$this->field_id = $field_id;
 
 

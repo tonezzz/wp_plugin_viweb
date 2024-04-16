@@ -6,7 +6,7 @@
  * @author Kevin Provance <kevin.provance@gmail.com>
  * @class   Redux_Extension_Multi_Media
  *
- * @version 4.4.1
+ * @version 4.3.15
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -26,7 +26,7 @@ if ( ! class_exists( 'Redux_Extension_Multi_Media' ) ) {
 		 *
 		 * @var string
 		 */
-		public static $version = '4.4.1';
+		public static $version = '4.3.15';
 
 		/**
 		 * Extension name.
@@ -41,12 +41,12 @@ if ( ! class_exists( 'Redux_Extension_Multi_Media' ) ) {
 		 * @since       1.0.0
 		 * @access      public
 		 *
-		 * @param       ReduxFramework $redux Parent settings.
+		 * @param       ReduxFramework $parent Parent settings.
 		 *
 		 * @return      void
 		 */
-		public function __construct( $redux ) {
-			parent::__construct( $redux, __FILE__ );
+		public function __construct( $parent ) {
+			parent::__construct( $parent, __FILE__ );
 
 			$this->add_field( 'multi_media' );
 		}
@@ -56,7 +56,8 @@ if ( ! class_exists( 'Redux_Extension_Multi_Media' ) ) {
 		 *
 		 * @param int|string $id image ID.
 		 *
-		 * @return array
+		 * @return array|void
+		 *
 		 * @depreacted Remove camelCase function name.
 		 */
 		public static function getExtendedData( $id ) {

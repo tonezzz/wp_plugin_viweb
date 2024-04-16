@@ -3,7 +3,6 @@
  * Redux Framework Args Class
  *
  * @package     Redux_Framework/Classes
- * @noinspection PhpConditionCheckedByNextConditionInspection
  */
 
 // Exit if accessed directly.
@@ -54,11 +53,11 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 		/**
 		 * Redux_Args constructor.
 		 *
-		 * @param     object $redux ReduxFramework object.
+		 * @param     object $parent ReduxFramework object.
 		 * @param     array  $args Global arguments array.
 		 */
-		public function __construct( $redux, array $args ) {
-			$this->parent = $redux;
+		public function __construct( $parent, array $args ) {
+			$this->parent = $parent;
 
 			$default = array(
 				'opt_name'                         => '',
@@ -158,8 +157,7 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 				'allow_tracking'                   => true,
 				'admin_theme'                      => 'wp',
 				'elusive_frontend'                 => false,
-				'fontawesome_frontend'             => false,
-				'flyout_submenus'                  => true,
+				'pro'                              => array(),
 				'font_display'                     => 'swap', // block|swap|fallback|optional.
 				'load_on_cron'                     => false,
 				'search'                           => false,
@@ -192,7 +190,7 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 		}
 
 		/**
-		 * Builds and sanitizes a global args array.
+		 * Builds and sanitizes global args array.
 		 *
 		 * @param     array $args Global args.
 		 *
@@ -208,6 +206,9 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 			if ( ! function_exists( 'wp_rand' ) ) {
 				require_once ABSPATH . '/wp-includes/pluggable.php';
 			}
+
+			$this->parent->core_instance = chr( 64 + wp_rand( 1, 26 ) ) . time() . '_' . wp_rand( 0, 1000000 );
+			$this->parent->core_thread   = chr( 64 + wp_rand( 1, 26 ) ) . time() . '_' . wp_rand( 0, 1000000 );
 
 			if ( $args['opt_name'] === $this->parent->old_opt_name ) {
 				$this->parent->old_opt_name = null;
@@ -280,7 +281,7 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 				$args['page_title'] = esc_html__( 'Options', 'redux-framework' );
 			}
 
-			// Auto creates the page_slug appropriately.
+			// Auto create the page_slug appropriately.
 			if ( empty( $args['page_slug'] ) ) {
 				if ( ! empty( $args['display_name'] ) ) {
 					$args['page_slug'] = sanitize_html_class( $args['display_name'] );
@@ -339,6 +340,10 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 						if ( is_array( $arr ) && ! empty( $arr ) ) {
 							foreach ( $arr as $y ) {
 								if ( strpos( Redux_Core::strtolower( $y ), 'redux' ) !== false ) {
+									$msg = '<strong>' . esc_html__( 'Redux Framework Notice', 'redux-framework' ) . ' </strong>' .
+										esc_html__( 'There are references to the Redux Framework support site in your config\'s ', 'redux-framework' ) .
+										'<code>admin_bar_links</code> ' . esc_html__( 'argument.  This is sample data.  Please change or remove this data before shipping your product.', 'redux-framework' );
+
 									$this->omit_items = true;
 									break;
 								}
@@ -352,6 +357,10 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 						if ( is_array( $arr ) && ! empty( $arr ) ) {
 							foreach ( $arr as $y ) {
 								if ( strpos( Redux_Core::strtolower( $y ), 'redux' ) !== false ) {
+									$msg = '<strong>' . esc_html__( 'Redux Framework Notice:', 'redux-framework' ) . '</strong>' .
+										esc_html__( 'There are references to the Redux Framework support site in your config\'s', 'redux-framework' ) .
+										' <code>share_icons</code> ' . esc_html__( 'argument.  This is sample data.  Please change or remove this data before shipping your product.', 'redux-framework' );
+
 									$this->omit_icons = true;
 								}
 							}
@@ -367,7 +376,6 @@ if ( ! class_exists( 'Redux_Args', false ) ) {
 		 * @param array $args Global args.
 		 *
 		 * @return array
-		 * @noinspection PhpStrictComparisonWithOperandsOfDifferentTypesInspection
 		 */
 		private function default_cleanup( array $args ): array {
 

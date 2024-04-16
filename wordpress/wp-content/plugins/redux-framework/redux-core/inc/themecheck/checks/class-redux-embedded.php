@@ -75,6 +75,7 @@ class Redux_Embedded implements themecheck {
 	public function getError(): array {
 		return $this->error;
 	}
+
 }
 
 $themechecks[] = new Redux_Embedded();

@@ -30,7 +30,7 @@ services:
       - ./persistent-data/letsencrypt/live/thakarn.gizmo-thailand.com/privkey.pem:/usr/local/apache2/conf/server.key
       #- ./dockers/apache/ssl/server.crt:/usr/local/apache2/conf/server.crt
       #- ./dockers/apache/ssl/server.key:/usr/local/apache2/conf/server.key
-      #- ./tmp:/var/log/letsencrypt/
+      - ./tmp/log:/var/log
       #- ./dockers/apache/init:/init
     depends_on:
       - php-fpm
@@ -40,7 +40,7 @@ services:
       context: ./dockers/php-fpm
       dockerfile: Dockerfile
     container_name: ${PROJECT_NAME}_php-fpm
-    mem_limit: 4g
+    mem_limit: 2g
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

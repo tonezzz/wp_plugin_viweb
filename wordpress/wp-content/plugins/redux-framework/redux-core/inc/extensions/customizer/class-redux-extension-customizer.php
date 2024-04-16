@@ -5,8 +5,7 @@
  *
  * @package ReduxFramework/Extentions
  * @class Redux_Extension_Customizer
- * @version 4.4.11
- * @noinspection PhpIgnoredClassAliasDeclaration
+ * @version 4.0.0
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -26,7 +25,7 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 		 *
 		 * @var string
 		 */
-		public static $version = '4.4.11';
+		public static $version = '4.3.11';
 
 		/**
 		 * Set the name of the field.  Ideally, this will also be your extension's name.
@@ -95,13 +94,13 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 		/**
 		 * Redux_Extension_my_extension constructor.
 		 *
-		 * @param ReduxFramework $redux ReduxFramework pointer.
+		 * @param ReduxFramework $parent ReduxFramework pointer.
 		 */
-		public function __construct( $redux ) {
+		public function __construct( $parent ) {
 			global $pagenow;
 			global $wp_customize;
 
-			parent::__construct( $redux, __FILE__ );
+			parent::__construct( $parent, __FILE__ );
 
 			if ( is_admin() && ! isset( $wp_customize ) && 'customize.php' !== $pagenow && 'admin-ajax.php' !== $pagenow ) {
 				return;
@@ -135,7 +134,7 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 				$this->parent->args['customizer_only'] = true;
 			}
 
-			if ( isset( $_POST['wp_customize'] ) && 'on' === $_POST['wp_customize'] && ! empty( $_POST['customized'] ) && ! isset( $_POST['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			if ( isset( $_POST['wp_customize'] ) && 'on' === $_POST['wp_customize'] && isset( $_POST['customized'] ) && ! empty( $_POST['customized'] ) && ! isset( $_POST['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 				add_action( "redux/options/{$this->parent->args['opt_name']}/options", array( $this, 'override_values' ), 100 );
 			}
 
@@ -220,14 +219,6 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 						$this->redux_fields[] = str_replace( Redux_Core::$dir . 'inc/fields/', '', $file );
 					}
 				}
-
-				$file_paths = glob( Redux_Core::$dir . 'inc/extensions/*' );
-
-				foreach ( $file_paths as $file ) {
-					if ( 'section' !== $file && 'divide' !== $file && 'editor' !== $file ) {
-						$this->redux_fields[] = str_replace( Redux_Core::$dir . 'inc/extensions/', '', $file );
-					}
-				}
 			}
 
 			$class_name = 'Redux_Customizer_Control_' . $option['type'];
@@ -275,6 +266,13 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 				true
 			);
 
+			$custom_css  = '#' . $this->parent->core_thread . '{line-height:0;border:0;}';
+			$custom_css .= '#' . $this->parent->core_instance . '{position:inherit!important;right:0!important;top:0!important;bottom:0!important;';
+			$custom_css .= 'left:0!important;text-align:center;margin-bottom:0;line-height:0;-webkit-transition:left ease-in-out .18s;transition:left ease-in-out .18s;}';
+			$custom_css .= '#' . $this->parent->core_instance . ' img{-webkit-transition:left ease-in-out .18s;transition:left ease-in-out .18s;}';
+
+			wp_add_inline_style( 'redux-extension-customizer', $custom_css );
+
 			wp_localize_script(
 				'redux-extension-customizer',
 				'redux_customizer',
@@ -310,7 +308,7 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 		 * Get post values.
 		 */
 		protected static function get_post_values() {
-			if ( empty( self::$post_values ) && ! empty( $_POST['customized'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			if ( empty( self::$post_values ) && isset( $_POST['customized'] ) && ! empty( $_POST['customized'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 				self::$post_values = json_decode( stripslashes_deep( sanitize_text_field( wp_unslash( $_POST['customized'] ) ) ), true ); // phpcs:ignore WordPress.Security.NonceVerification
 			}
 		}
@@ -351,7 +349,7 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 			$field_id = str_replace( $this->parent->args['opt_name'] . '-', '', $control->redux_id );
 			$field    = $this->options[ $field_id ];
 
-			if ( ! empty( $field['compiler'] ) ) {
+			if ( isset( $field['compiler'] ) && ! empty( $field['compiler'] ) ) {
 				echo '<tr class="compiler">';
 			} else {
 				echo '<tr>';
@@ -373,12 +371,10 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 		 * Register customizer controls.
 		 *
 		 * @param WP_Customize_Manager $wp_customize .
-		 *
-		 * @throws ReflectionException Exception.
 		 */
 		public function register_customizer_controls( WP_Customize_Manager $wp_customize ) {
 			if ( ! class_exists( 'Redux_Customizer_Section' ) ) {
-				require_once __DIR__ . '/inc/class-redux-customizer-section.php';
+				require_once dirname( __FILE__ ) . '/inc/class-redux-customizer-section.php';
 
 				if ( method_exists( $wp_customize, 'register_section_type' ) ) {
 					$wp_customize->register_section_type( 'Redux_Customizer_Section' );
@@ -386,7 +382,7 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 			}
 
 			if ( ! class_exists( 'Redux_Customizer_Panel' ) ) {
-				require_once __DIR__ . '/inc/class-redux-customizer-panel.php';
+				require_once dirname( __FILE__ ) . '/inc/class-redux-customizer-panel.php';
 
 				if ( method_exists( $wp_customize, 'register_panel_type' ) ) {
 					$wp_customize->register_panel_type( 'Redux_Customizer_Panel' );
@@ -394,7 +390,7 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 			}
 
 			if ( ! class_exists( 'Redux_Customizer_Control' ) ) {
-				require_once __DIR__ . '/inc/class-redux-customizer-control.php';
+				require_once dirname( __FILE__ ) . '/inc/class-redux-customizer-control.php';
 			}
 
 			// phpcs:ignore WordPress.NamingConventions.ValidHookName
@@ -466,7 +462,7 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 				// Let's set a default priority.
 				if ( empty( $section['priority'] ) ) {
 					$section['priority'] = $order['heading'];
-					++$order['heading'];
+					$order['heading'] ++;
 				}
 				$section['id'] = $this->parent->args['opt_name'] . '-' . $section['id'];
 
@@ -541,7 +537,7 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 					// Change the item priority if not set.
 					if ( 'heading' !== $option['type'] && ! isset( $option['priority'] ) ) {
 						$option['priority'] = $order['option'];
-						++$order['option'];
+						$order['option'] ++;
 					}
 
 					if ( ! empty( $this->options_defaults[ $option['id'] ] ) ) {
@@ -667,8 +663,6 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 
 		/**
 		 * Actions to take after customizer save.
-		 *
-		 * @throws ReflectionException Exception.
 		 */
 		public function customizer_save_after() {
 			if ( empty( $this->parent->options ) ) {
@@ -718,6 +712,32 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 		}
 
 		/**
+		 * Enqueue CSS/JS for preview pane
+		 *
+		 * @since       1.0.0
+		 * @access      public
+		 * @global      $wp_styles
+		 * @return      void
+		 */
+		public function enqueue_previewer() {
+			wp_enqueue_script( 'redux-extension-previewer-js', $this->extension_url . 'assets/js/preview.js', array(), self::$version, true );
+
+			$localize = array(
+				'save_pending'   => esc_html__( 'You have changes that are not saved. Would you like to save them now?', 'redux-framework' ),
+				'reset_confirm'  => esc_html__( 'Are you sure? Resetting will lose all custom values.', 'redux-framework' ),
+				'preset_confirm' => esc_html__( 'Your current options will be replaced with the values of this preset. Would you like to proceed?', 'redux-framework' ),
+				'opt_name'       => $this->parent->args['opt_name'],
+				'options'        => $this->parent->options,
+				'defaults'       => $this->parent->options_defaults,
+
+				// phpcs:ignore Squiz.PHP.CommentedOutCode
+				// 'folds'             => $this->folds,
+			);
+
+			wp_localize_script( 'redux-extension-previewer-js', 'reduxPost', $localize );
+		}
+
+		/**
 		 * Enqueue CSS/JS for the customizer controls
 		 *
 		 * @since       1.0.0
@@ -742,7 +762,7 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 			// phpcs:ignore WordPress.NamingConventions.ValidHookName
 			do_action( 'redux-enqueue-' . $this->parent->args['opt_name'] );
 
-			foreach ( $this->parent->sections as $section ) {
+			foreach ( $this->sections as $section ) {
 				if ( isset( $section['fields'] ) ) {
 					foreach ( $section['fields'] as $field ) {
 						if ( isset( $field['type'] ) ) {
@@ -781,6 +801,7 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 		 * @return      void
 		 */
 		public function register_setting() {
+
 		}
 
 		/**
@@ -796,6 +817,17 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 
 			return $value;
 		}
+
+		/**
+		 * HTML OUTPUT.
+		 *
+		 * @since       1.0.0
+		 * @access      public
+		 * @return      void
+		 */
+		public function customizer_html_output() {
+
+		}
 	}
 
 	if ( ! function_exists( 'redux_customizer_custom_validation' ) ) {
@@ -810,8 +842,4 @@ if ( ! class_exists( 'Redux_Extension_Customizer', false ) ) {
 			return $field;
 		}
 	}
-}
-
-if ( ! class_exists( 'ReduxFramework_extension_customizer' ) ) {
-	class_alias( 'Redux_Extension_Customizer', 'ReduxFramework_extension_customizer' );
 }

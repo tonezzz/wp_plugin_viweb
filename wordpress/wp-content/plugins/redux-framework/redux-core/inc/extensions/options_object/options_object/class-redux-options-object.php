@@ -21,8 +21,6 @@ if ( ! class_exists( 'Redux_Options_Object', false ) ) {
 	 */
 	class Redux_Options_Object extends Redux_Field {
 
-		public $is_field;
-
 		/**
 		 * Redux_Options_Object constructor.
 		 *
@@ -129,7 +127,7 @@ if ( ! class_exists( 'Redux_Options_Object', false ) ) {
 		 */
 		public function enqueue() {
 			wp_enqueue_script(
-				'redux-extension-options-object',
+				'redux-extension-options-object-js',
 				$this->url . 'redux-options-object' . Redux_Functions::is_min() . '.js',
 				array( 'jquery', 'redux-js' ),
 				Redux_Extension_Options_Object::$version,

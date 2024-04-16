@@ -2,10 +2,11 @@
 /**
  * Redux Accordion Extension Class
  *
- * @package Redux
+ * @package Redux Extentions
  * @author Kevin Provance <kevin.provance@gmail.com>
  * @class   Redux_Extension_Accordion
- * @version 4.3.16
+ *
+ * @version 1.0.1
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -40,12 +41,12 @@ if ( ! class_exists( 'Redux_Extension_Accordion' ) ) {
 		 * @since       1.0.0
 		 * @access      public
 		 *
-		 * @param       ReduxFramework $redux Parent settings.
+		 * @param       ReduxFramework $parent Parent settings.
 		 *
 		 * @return      void
 		 */
-		public function __construct( $redux ) {
-			parent::__construct( $redux, __FILE__ );
+		public function __construct( $parent ) {
+			parent::__construct( $parent, __FILE__ );
 
 			$this->add_field( 'accordion' );
 		}

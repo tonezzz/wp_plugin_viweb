@@ -33,14 +33,6 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 		public $opt_name = '';
 
 		/**
-		 * Defaults array.
-		 *
-		 * @var array
-		 */
-
-		private $defaults = array();
-
-		/**
 		 * Set defaults.
 		 */
 		public function set_defaults() {
@@ -53,11 +45,12 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 		/**
 		 * Rebuild Settings.
 		 *
+		 * @param array $defaults Defaults array.
 		 * @param array $settings Settings array.
 		 *
 		 * @return array
 		 */
-		private function rebuild_setttings( array $settings ): array {
+		private function rebuild_setttings( array $defaults, array $settings ): array {
 			$fixed_arr = array();
 			$stock     = '';
 
@@ -143,7 +136,7 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 			echo '<div class="redux-social-profiles-selector-container">';
 			echo '<ul id="redux-social-profiles-selector-list">';
 
-			$settings = $this->rebuild_setttings( $settings );
+			$settings = $this->rebuild_setttings( $this->defaults, $settings );
 
 			foreach ( $this->defaults as $key => $social_provider_default ) {
 				$social_provider_option = ( $settings && is_array( $settings ) && array_key_exists( $key, $settings ) ) ? $settings[ $key ] : null;
@@ -220,15 +213,15 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 
 				echo '<div class="redux-social-profiles-item-enabled">';
 				$checked = ( $enabled ) ? 'checked' : '';
-				echo '<input type="checkbox" id="' . esc_attr( $this->field['id'] ) . '-checkbox-' . esc_attr( $key ) . '" class="checkbox-' . esc_attr( $key ) . '" data-key="' . esc_attr( $key ) . '" value="1" ' . esc_attr( $checked ) . '/>';
+				echo '<input type="checkbox" class="checkbox-' . esc_attr( $key ) . '" data-key="' . esc_attr( $key ) . '" value="1" ' . esc_attr( $checked ) . '/>';
 				esc_html_e( 'Enabled', 'redux-framework' );
 				echo '</div>';
 
 				$color_class = $color_pickers ? '' : ' no-color-pickers';
 
 				echo '<div class="redux-social-profiles-link-url input_wrapper' . esc_attr( $color_class ) . '">';
-				echo '<label for="redux-social-profiles-url-' . esc_attr( $key ) . '-text" class="redux-text-url-label">' . esc_html( $label ) . '</label>';
-				echo '<input id="redux-social-profiles-url-' . esc_attr( $key ) . '-text" class="redux-social-profiles-url-text" data-key="' . esc_attr( $key ) . '" type="text" value="' . esc_url( $url ) . '" />';
+				echo '<label class="redux-text-url-label">' . esc_html( $label ) . '</label>';
+				echo '<input class="redux-social-profiles-url-text" data-key="' . esc_attr( $key ) . '" type="text" value="' . esc_url( $url ) . '" />';
 				echo '</div>';
 
 				$reset_text = __( 'Reset', 'redux-framework' );
@@ -241,10 +234,9 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 					$label = apply_filters( 'redux/extensions/social_profiles/' . $this->opt_name . '/color_picker/text', esc_html__( 'Text', 'redux-framework' ) );
 
 					echo '<div class="redux-social-profiles-text-color picker_wrapper" >';
-					echo '<label for="redux-social-profiles-color-picker-' . esc_attr( $key ) . ' text" class="redux-text-color-label">' . esc_html( $label ) . '</label>';
+					echo '<label class="redux-text-color-label">' . esc_html( $label ) . '</label>';
 					echo '<input
                             class="redux-social-profiles-color-picker-' . esc_attr( $key ) . ' text"
-                            id="redux-social-profiles-color-picker-' . esc_attr( $key ) . ' text"
                             type="text"
                             value="' . esc_attr( $color ) . '"
                             data-key="' . esc_attr( $key ) . '"
@@ -255,10 +247,9 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 					$label = apply_filters( 'redux/extensions/social_profiles/' . $this->opt_name . '/color_picker/background', esc_html__( 'Background', 'redux-framework' ) );
 
 					echo '<div class="redux-social-profiles-background-color picker_wrapper">';
-					echo '<label for="redux-social-profiles-color-picker-' . esc_attr( $key ) . ' background" class="redux-background-color-label" for="redux-social-profiles-color-picker-' . esc_attr( $key ) . ' background">' . esc_html( $label ) . '</label>';
+					echo '<label class="redux-background-color-label">' . esc_html( $label ) . '</label>';
 					echo '<input
                             class="redux-social-profiles-color-picker-' . esc_attr( $key ) . ' background"
-                            id="redux-social-profiles-color-picker-' . esc_attr( $key ) . ' background"
                             type="text"
                             value="' . esc_attr( $background ) . '"
                             data-key="' . esc_attr( $key ) . '"
@@ -268,7 +259,6 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 
 				echo '<div class="redux-social-profiles-item-order">';
 				echo '<input
-				        id="' . esc_attr( $this->field['id'] ) . '-item-order-' . esc_attr( $key ) . '"
                         type="hidden"
                         value="' . esc_attr( $order ) . '"
                     />';
@@ -283,17 +273,6 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 		}
 
 		/**
-		 * This function is unused, but necessary to trigger output.
-		 *
-		 * @param mixed $data CSS data.
-		 *
-		 * @return mixed|string|void
-		 */
-		public function css_style( $data ) {
-			return $data;
-		}
-
-		/**
 		 * Used to enqueue to the front-end
 		 *
 		 * @param string|null|array $style Style.
@@ -302,7 +281,7 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 			if ( ! empty( $this->value ) ) {
 				foreach ( $this->value as $arr ) {
 					if ( $arr['enabled'] ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement
-						Redux_Functions_Ex::enqueue_font_awesome();
+
 					}
 				}
 			}
@@ -323,19 +302,21 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 
 			$min = Redux_Functions::isMin();
 
-			Redux_Functions_Ex::enqueue_font_awesome();
+			// font-awesome.
+			wp_enqueue_style( 'font-awesome' );
+			wp_enqueue_style( 'font-awesome-4-shims' );
 
 			// Field dependent JS.
 			wp_enqueue_script(
-				'redux-field-social-profiles',
+				'redux-field-social-profiles-js',
 				$this->url . 'redux-social-profiles' . $min . '.js',
 				array( 'jquery', 'jquery-ui-sortable', 'redux-spectrum-js', 'redux-js' ),
-				Redux_Extension_Social_Profiles::$version,
+				time(),
 				true
 			);
 
 			wp_localize_script(
-				'redux-field-social-profiles',
+				'redux-field-social-profiles-js',
 				'reduxSocialDefaults',
 				$this->defaults
 			);
@@ -345,7 +326,7 @@ if ( ! class_exists( 'Redux_Social_Profiles' ) ) {
 					'redux-field-social-profiles',
 					$this->url . 'redux-social-profiles.css',
 					array( 'redux-spectrum-css' ),
-					Redux_Extension_Social_Profiles::$version
+					time()
 				);
 			}
 		}

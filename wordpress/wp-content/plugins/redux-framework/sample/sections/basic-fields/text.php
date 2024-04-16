@@ -43,14 +43,8 @@ Redux::set_section(
 				'title'       => esc_html__( 'Text Field w/ placeholder using custom data object.', 'your-textdomain-here' ),
 				'subtitle'    => esc_html__( 'Subtitle', 'your-textdomain-here' ),
 				'desc'        => esc_html__( 'Field Description', 'your-textdomain-here' ),
-				'placeholder' => array(
-					'box1' => 'Box One Placeholder',
-					'box2' => 'Box Two Placeholder',
-				),
-				'data'        => array(
-					'box1' => 'Box One Title',
-					'box2' => 'Box Two Title',
-				),
+				'placeholder' => 'Placeholder Text',
+				'data'        => array( 'box1', 'box2' ),
 			),
 		),
 	)

@@ -29,6 +29,7 @@ function redux_change( variable ) {
 
 	(function( $ ) {
 		var rContainer;
+		var opt_name;
 		var parentID;
 		var id;
 		var th;
@@ -42,6 +43,12 @@ function redux_change( variable ) {
 		variable = $( variable );
 
 		rContainer = $( variable ).parents( '.redux-container:first' );
+
+		if ( redux.customizer ) {
+			opt_name = $( '.redux-customizer-opt-name' ).data( 'opt-name' );
+		} else {
+			opt_name = $.redux.getOptName( rContainer );
+		}
 
 		$( 'body' ).trigger( 'check_dependencies', variable );
 
@@ -78,7 +85,7 @@ function redux_change( variable ) {
 				if ( errorsLeft <= 0 ) {
 					th.find( '.redux-menu-error:first' ).fadeOut().remove();
 				} else {
-					th.find( 'li .redux-menu-error:first' ).text( errorsLeft );
+					th.find( '.redux-menu-error:first' ).text( errorsLeft );
 				}
 
 				rContainer.find( '.redux-field-errors span' ).text( errorCount );
@@ -114,7 +121,7 @@ function redux_change( variable ) {
 					th.find( '.redux-menu-warning:first' ).text( warningsLeft );
 				}
 
-				rContainer.find( 'li .redux-field-warning span' ).text( warningCount );
+				rContainer.find( '.redux-field-warning span' ).text( warningCount );
 			}
 
 			if ( 0 !== subParent.length ) {

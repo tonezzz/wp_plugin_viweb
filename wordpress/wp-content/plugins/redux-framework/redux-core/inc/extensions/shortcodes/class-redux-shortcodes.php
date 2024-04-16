@@ -2,7 +2,7 @@
 /**
  * Redux Shortcodes Class
  *
- * @package Redux
+ * @package Redux Pro
  * @author  Dovy Paukstys (dovy) & Kevin Provance <kevin.provance@gmail.com>
  * @class   Redux_Extension_Shortcodes
  */
@@ -64,7 +64,7 @@ if ( ! class_exists( 'Redux_Shortcodes' ) ) {
 		/**
 		 * Redux_Shortcodes constructor.
 		 */
-		public function __construct() {
+		public function __construct(  ) {
 			if ( ! shortcode_exists( 'bloginfo' ) ) {
 				add_shortcode( 'bloginfo', array( $this, 'blog_info' ) );
 			} else {
@@ -91,7 +91,7 @@ if ( ! class_exists( 'Redux_Shortcodes' ) ) {
 		 * @param array|string $atts    Attributes.
 		 * @param string|null  $content Content.
 		 *
-		 * @return bool|string|null
+		 * @return bool|string|void|null
 		 */
 		public function blog_info( $atts = array(), string $content = null ) {
 			if ( ! is_array( $atts ) ) {

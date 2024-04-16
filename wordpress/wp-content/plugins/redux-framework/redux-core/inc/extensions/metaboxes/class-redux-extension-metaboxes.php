@@ -2,11 +2,11 @@
 /**
  * Redux Metabox Extension Class
  *
- * @package Redux
+ * @package Redux Extentions
  * @author  Dovy Paukstys <dovy@reduxframework.com> & Kevin Provance <kevin.provance@gmail.com>
  * @class   Redux_Extension_Metaboxes
  *
- * @version 4.2.0
+ * @version 4.0.0
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -55,13 +55,6 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 		 * @var string
 		 */
 		public $post_type;
-
-		/**
-		 * Sections array.
-		 *
-		 * @var array
-		 */
-		public $orig_args;
 
 		/**
 		 * Sections array.
@@ -178,18 +171,18 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 		/**
 		 * ReduxFramework_extension_metaboxes constructor.
 		 *
-		 * @param object $redux ReduxFramework object.
+		 * @param object $parent ReduxFramework object.
 		 */
-		public function __construct( $redux ) {
+		public function __construct( $parent ) {
 			global $pagenow;
 
-			parent::__construct( $redux, __FILE__ );
+			parent::__construct( $parent, __FILE__ );
 
-			$this->parent = $redux;
+			$this->parent = $parent;
 
 			$this->parent->extensions['metaboxes'] = $this;
 
-			$this->extension_dir = trailingslashit( str_replace( '\\', '/', __DIR__ ) );
+			$this->extension_dir = trailingslashit( str_replace( '\\', '/', dirname( __FILE__ ) ) );
 			$this->extension_url = site_url( str_replace( trailingslashit( str_replace( '\\', '/', ABSPATH ) ), '', $this->extension_dir ) );
 
 			// Only run metaboxes on the pages/posts, not the front-end.
@@ -213,8 +206,6 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 			if ( is_admin() && ( 'post-new.php' === $pagenow || 'post.php' === $pagenow ) ) {
 				$this->parent->never_save_to_db = true;
 			}
-
-			include_once Redux_Core::$dir . 'inc/extensions/metaboxes/redux-metaboxes-helpers.php';
 
 			// phpcs:ignore Generic.Strings.UnnecessaryStringConcat
 			add_action( 'add_' . 'meta_' . 'boxes', array( $this, 'add' ) );
@@ -278,8 +269,8 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 
 			foreach ( $this->boxes as $bk => $box ) {
 
-				// If the post-ids for this box are set, we're limiting to the current post id.
-				if ( ! empty( $box['post_ids'] ) ) {
+				// If the post ids for this box are set, we're limiting to the current post id.
+				if ( isset( $box['post_ids'] ) && ! empty( $box['post_ids'] ) ) {
 					if ( ! is_array( $box['post_ids'] ) ) {
 						$box['post_ids'] = array( $box['post_ids'] );
 					}
@@ -289,7 +280,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 				}
 
 				if ( ! empty( $box['sections'] ) ) {
-					$this->sections = wp_parse_args( $this->sections, $box['sections'] );
+					$this->sections = $box['sections'];
 
 					$this->post_types = wp_parse_args( $this->post_types, $box['post_types'] );
 
@@ -330,7 +321,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 						$this->meta[ $this->post_id ] = $this->get_meta( $this->post_id );
 
 						foreach ( $box['sections'] as $sk => $section ) {
-							if ( ! empty( $section['fields'] ) ) {
+							if ( isset( $section['fields'] ) && ! empty( $section['fields'] ) ) {
 								foreach ( $section['fields'] as $fk => $field ) {
 									if ( ! isset( $field['class'] ) ) {
 										$field['class'] = '';
@@ -351,15 +342,9 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 
 										foreach ( $box['post_types'] as $type ) {
 											$this->post_type_fields[ $type ][ $field['id'] ] = 1;
-
-											if ( 'repeater' === $field['type'] ) {
-												foreach ( $field['fields'] as $val ) {
-													$this->post_type_fields[ $type ][ $val['id'] ] = 1;
-												}
-											}
 										}
 
-										if ( ! empty( $field['output'] ) ) {
+										if ( isset( $field['output'] ) && ! empty( $field['output'] ) ) {
 											$this->output[ $field['id'] ] = isset( $this->output[ $field['id'] ] ) ? array_merge( $field['output'], $this->output[ $field['id'] ] ) : $field['output'];
 										}
 
@@ -551,7 +536,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 					$types = array_merge( $box['post_types'], $types );
 				}
 
-				if ( ! empty( $box['post_types'] ) ) {
+				if ( isset( $box['post_types'] ) && ! empty( $box['post_types'] ) ) {
 					if ( ! is_array( $box['post_types'] ) ) {
 						$box['post_types']                 = array( $box['post_types'] );
 						$this->boxes[ $key ]['post_types'] = $box['post_types'];
@@ -583,10 +568,12 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 					/**
 					 * Redux metaboxes CSS
 					 * filter 'redux/page/{opt_name}/enqueue/redux-extension-metaboxes-css'
+					 *
+					 * @param string  bundled stylesheet src
 					 */
 					if ( $this->parent->args['dev_mode'] ) {
 						wp_enqueue_style(
-							'redux-extension-metaboxes',
+							'redux-extension-metaboxes-css',
 							apply_filters( "redux/metaboxes/{$this->parent->args['opt_name']}/enqueue/redux-extension-metaboxes-css", $this->extension_url . 'redux-extension-metaboxes.css' ), // phpcs:ignore: WordPress.NamingConventions.ValidHookName
 							array(),
 							self::$version
@@ -596,9 +583,11 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 					/**
 					 * Redux metaboxes JS
 					 * filter 'redux/page/{opt_name}/enqueue/redux-extension-metaboxes-js
+					 *
+					 * @param string  bundled javscript
 					 */
 					wp_enqueue_script(
-						'redux-extension-metaboxes',
+						'redux-extension-metaboxes-js',
 						apply_filters( "redux/metaboxes/{$this->parent->args['opt_name']}/enqueue/redux-extension-metaboxes-js", $this->extension_url . 'redux-extension-metaboxes' . Redux_Functions::isMin() . '.js' ), // phpcs:ignore: WordPress.NamingConventions.ValidHookName
 						array( 'jquery', 'redux-js' ),
 						self::$version,
@@ -606,7 +595,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 					);
 
 					// Values used by the javascript.
-					wp_localize_script( 'redux-extension-metaboxes', 'reduxMetaboxes', $this->wp_links );
+					wp_localize_script( 'redux-extension-metaboxes-js', 'reduxMetaboxes', $this->wp_links );
 				}
 			}
 		}
@@ -672,13 +661,13 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 
 			// Not using rewrite rules, and 'p=N' and 'page_id=N' methods failed, so we're out of options.
 			if ( empty( $rewrite ) ) {
-				if ( ! empty( $_GET ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+				if ( isset( $_GET ) && ! empty( $_GET ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 
 					/************************************************************************
 					 * ADDED: Trys checks URL for ?posttype=postname
 					 ************************************************************************ */
 
-					// Assign $url to $temp_url just in case. :) .
+					// Assign $url to $temp_url just incase. :) .
 					$temp_url = $url;
 
 					// Get rid of the #anchor.
@@ -692,7 +681,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 					// Get rid of ? mark.
 					$url_query = explode( '?', $temp_url );
 
-					if ( ! empty( $url_query[1] ) && strpos( $url_query[1], '=' ) ) {
+					if ( isset( $url_query[1] ) && ! empty( $url_query[1] ) && strpos( $url_query[1], '=' ) ) {
 						$url_query = explode( '=', $url_query[1] );
 
 						if ( isset( $url_query[0] ) && isset( $url_query[1] ) ) {
@@ -709,7 +698,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 					}
 
 					foreach ( $GLOBALS['wp_post_types'] as $key => $value ) {
-						if ( ! empty( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+						if ( isset( $_GET[ $key ] ) && ! empty( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 							$args = array(
 								'name'      => sanitize_text_field( wp_unslash( $_GET[ $key ] ) ), // phpcs:ignore WordPress.Security.NonceVerification
 								'post_type' => $key,
@@ -766,14 +755,14 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 
 			$request = $url;
 
-			if ( empty( $request ) && ( empty( $_GET ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			if ( empty( $request ) && ( ! isset( $_GET ) || empty( $_GET ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 				return get_option( 'page_on_front' );
 			}
 
 			// Look for matches.
 			$request_match = $request;
 
-			foreach ( $rewrite as $match => $query ) {
+			foreach ( (array) $rewrite as $match => $query ) {
 				// If the requesting file is the anchor of the match, prepend it
 				// to the path info.
 				if ( ! empty( $url ) && ( $url !== $request ) && ( strpos( $match, $url ) === 0 ) ) {
@@ -795,21 +784,22 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 
 					$query = array();
 
-					foreach ( $query_vars as $key => $value ) {
+					foreach ( (array) $query_vars as $key => $value ) {
 						if ( in_array( $key, $wp->public_query_vars, true ) ) {
 							$query[ $key ] = $value;
 						}
 					}
 
 					/************************************************************************
-					 * ADDED: $GLOBALS['wp_post_types'] doesn't seem to have custom posttypes
+					 * ADDED: $GLOBALS['wp_post_types'] doesn't seem to have custom postypes
 					 * Trying below to find posttypes in $rewrite rules
 					 ************************************************************************ */
 
 					// PostType Array.
-					$post_types = array();
+					$custom_post_type = false;
+					$post_types       = array();
 
-					foreach ( $rewrite as $value ) {
+					foreach ( $rewrite as $key => $value ) {
 						if ( preg_match( '/post_type=([^&]+)/i', $value, $matched ) ) {
 							if ( isset( $matched[1] ) && ! in_array( $matched[1], $post_types, true ) ) {
 								$post_types[] = $matched[1];
@@ -817,8 +807,10 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 						}
 					}
 
-					foreach ( $query_vars as $key => $value ) {
+					foreach ( (array) $query_vars as $key => $value ) {
 						if ( in_array( $key, $post_types, true ) ) {
+							$custom_post_type = true;
+
 							$query['post_type'] = $key;
 							$query['postname']  = $value;
 						}
@@ -865,7 +857,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 					}
 
 					// Do the query.
-					if ( ! empty( $query['pagename'] ) ) {
+					if ( isset( $query['pagename'] ) && ! empty( $query['pagename'] ) ) {
 						$args = array(
 							'name'      => $query['pagename'],
 							'post_type' => 'page',
@@ -877,7 +869,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 						}
 					}
 
-					if ( ( empty( $query['page'] ) ) && ( empty( $query['pagename'] ) ) ) {
+					if ( ( ! isset( $query['page'] ) || empty( $query['page'] ) ) && ( ! isset( $query['pagename'] ) || empty( $query['pagename'] ) ) ) {
 						return 0;
 					}
 
@@ -916,7 +908,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 							if ( ! is_numeric( $sk ) || ! isset( $section['title'] ) ) {
 								$section['id'] = $sk;
 							} else {
-								$section['id'] = sanitize_text_field( $section['title'] );
+								$section['id'] = sanitize_text_field( $section['title'], $sk );
 							}
 							$this->boxes[ $key ]['sections'][ $sk ] = $section;
 						}
@@ -989,16 +981,18 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 				);
 
 				$box = wp_parse_args( $box, $defaults );
-				if ( ! empty( $box['post_types'] ) ) {
+				if ( isset( $box['post_types'] ) && ! empty( $box['post_types'] ) ) {
 					foreach ( $box['post_types'] as $posttype ) {
 						if ( isset( $box['title'] ) ) {
 							$title = $box['title'];
-						} elseif ( isset( $box['sections'] ) && 1 === count( $box['sections'] ) && isset( $box['sections'][0]['fields'] ) && 1 === count( $box['sections'][0]['fields'] ) && isset( $box['sections'][0]['fields'][0]['title'] ) ) {
+						} else {
+							if ( isset( $box['sections'] ) && 1 === count( $box['sections'] ) && isset( $box['sections'][0]['fields'] ) && 1 === count( $box['sections'][0]['fields'] ) && isset( $box['sections'][0]['fields'][0]['title'] ) ) {
 
 								// If only one field in this box.
 								$title = $box['sections'][0]['fields'][0]['title'];
-						} else {
-							$title = ucfirst( $posttype ) . ' ' . __( 'Options', 'redux-framework' );
+							} else {
+								$title = ucfirst( $posttype ) . ' ' . __( 'Options', 'redux-framework' );
+							}
 						}
 
 						$args = array(
@@ -1008,7 +1002,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 						);
 
 						// Override the parent args on a metabox level.
-						if ( empty( $this->orig_args ) ) {
+						if ( ! isset( $this->orig_args ) || empty( $this->orig_args ) ) {
 							$this->orig_args = $this->parent->args;
 						}
 
@@ -1083,6 +1077,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 
 				return $data;
 			}
+
 		}
 
 		/**
@@ -1107,7 +1102,11 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 						} else {
 							$new_value = array_map( 'maybe_unserialize', $value );
 
-							$this->meta[ $id ][ $key ] = $new_value[0];
+							if ( is_array( $new_value ) ) {
+								$this->meta[ $id ][ $key ] = $new_value[0];
+							} else {
+								$this->meta[ $id ][ $key ] = $new_value;
+							}
 						}
 					}
 				}
@@ -1132,7 +1131,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 		/**
 		 * Get values.
 		 *
-		 * @param mixed  $the_post Post object/id.
+		 * @param mixed  $the_post Post oject/id.
 		 * @param string $meta_key Meta key.
 		 * @param mixed  $def_val  Def value.
 		 *
@@ -1176,11 +1175,13 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 		/**
 		 * Generate Boxes.
 		 *
-		 * @param mixed $post Post.
+		 * @param mixed $post    ID.
 		 * @param array $metabox Metabox array.
 		 */
 		public function generate_boxes( $post, array $metabox ) {
-			if ( ! empty( $metabox['args']['permissions'] ) && ! Redux_Helpers::current_user_can( $metabox['args']['permissions'] ) ) {
+			global $wpdb;
+
+			if ( isset( $metabox['args']['permissions'] ) && ! empty( $metabox['args']['permissions'] ) && ! Redux_Helpers::current_user_can( $metabox['args']['permissions'] ) ) {
 				return;
 			}
 
@@ -1234,7 +1235,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 							<?php
 
 							foreach ( $sections as $s_key => $section ) {
-								if ( ! empty( $section['permissions'] ) && ! Redux_Helpers::current_user_can( $section['permissions'] ) ) {
+								if ( isset( $section['permissions'] ) && ! empty( $section['permissions'] ) && ! Redux_Helpers::current_user_can( $section['permissions'] ) ) {
 									continue;
 								}
 
@@ -1247,12 +1248,13 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 
 				<div class="redux-main">
 					<?php
+					$update_localize = false;
 
 					foreach ( $sections as $s_key => $section ) {
-						if ( ! empty( $section['permissions'] ) && ! Redux_Helpers::current_user_can( $section['permissions'] ) ) {
+						if ( isset( $section['permissions'] ) && ! empty( $section['permissions'] ) && ! Redux_Helpers::current_user_can( $section['permissions'] ) ) {
 							continue;
 						}
-						if ( ! empty( $section['fields'] ) ) {
+						if ( isset( $section['fields'] ) && ! empty( $section['fields'] ) ) {
 							if ( isset( $section['args'] ) ) {
 								$this->parent->args = wp_parse_args( $section['args'], $this->orig_args );
 							} elseif ( $this->parent->args !== $this->orig_args ) {
@@ -1263,17 +1265,17 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 							$section['class'] = isset( $section['class'] ) ? ' ' . $section['class'] : '';
 							echo '<div id="' . esc_attr( $s_key ) . '_box_' . esc_attr( $metabox['id'] ) . '_section_group" class="redux-group-tab' . esc_attr( $section['class'] ) . ' redux_metabox_panel' . esc_attr( $hide ) . '">';
 
-							if ( ! empty( $section['title'] ) ) {
+							if ( isset( $section['title'] ) && ! empty( $section['title'] ) ) {
 								echo '<h3 class="redux-section-title">' . wp_kses_post( $section['title'] ) . '</h3>';
 							}
 
-							if ( ! empty( $section['desc'] ) ) {
+							if ( isset( $section['desc'] ) && ! empty( $section['desc'] ) ) {
 								echo '<div class="redux-section-desc">' . wp_kses_post( $section['desc'] ) . '</div>';
 							}
 
 							echo '<table class="form-table"><tbody>';
-							foreach ( $section['fields'] as $field ) {
-								if ( ! empty( $field['permissions'] ) && ! Redux_Helpers::current_user_can( $field['permissions'] ) ) {
+							foreach ( $section['fields'] as $f_key => $field ) {
+								if ( isset( $field['permissions'] ) && ! empty( $field['permissions'] ) && ! Redux_Helpers::current_user_can( $field['permissions'] ) ) {
 									continue;
 								}
 								$field['name'] = $this->parent->args['opt_name'] . '[' . $field['id'] . ']';
@@ -1307,7 +1309,7 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 										echo '<td>';
 									}
 								} else {
-									echo '<td>' . $th; // phpcs:ignore WordPress.Security.EscapeOutput
+									echo '<td>' . $th . ''; // phpcs:ignore WordPress.Security.EscapeOutput
 								}
 
 								if ( 'section' === $field['type'] && ( 'true' === $field['indent'] || true === $field['indent'] ) ) {
@@ -1358,6 +1360,8 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 				return $post_id;
 			}
 
+			$meta = $this->get_meta( $post_id );
+
 			// Verify that the nonce is valid.
 			// Validate fields (if needed).
 			if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['redux_metaboxes_meta_nonce'] ) ), 'redux_metaboxes_meta_nonce' ) ) {
@@ -1397,7 +1401,6 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 			if ( isset( $this->parent->args['metaboxes_save_defaults'] ) && $this->parent->args['metaboxes_save_defaults'] ) {
 				$dont_save = false;
 			}
-
 			foreach ( Redux_Helpers::sanitize_array( wp_unslash( $_POST[ $this->parent->args['opt_name'] ] ) ) as $key => $value ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 				// Have to remove the escaping for array comparison.
 				if ( is_array( $value ) ) {
@@ -1491,8 +1494,6 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 			foreach ( $check as $key => $value ) {
 				delete_post_meta( $post_id, $key );
 			}
-
-			return $post_id;
 		}
 
 		/**
@@ -1537,3 +1538,49 @@ if ( ! class_exists( 'Redux_Extension_Metaboxes', false ) ) {
 }
 
 class_alias( 'Redux_Extension_Metaboxes', 'ReduxFramework_Extension_metaboxes' );
+
+if ( ! function_exists( 'redux_metaboxes_loop_start' ) ) {
+	/**
+	 * Start loop.
+	 *
+	 * @param string $opt_name Panel opt_name.
+	 * @param array  $the_post Post object.
+	 */
+	function redux_metaboxes_loop_start( string $opt_name, array $the_post = array() ) {
+		$redux     = ReduxFrameworkInstances::get_instance( $opt_name );
+		$metaboxes = $redux->extensions['metaboxes'];
+
+		$metaboxes->loop_start( $the_post );
+	}
+}
+
+if ( ! function_exists( 'redux_metaboxes_loop_end' ) ) {
+	/**
+	 * End loop.
+	 *
+	 * @param string $opt_name Panel opt_name.
+	 * @param array  $the_post Post object.
+	 */
+	function redux_metaboxes_loop_end( string $opt_name, array $the_post = array() ) {
+		$redux     = ReduxFrameworkInstances::get_instance( $opt_name );
+		$metaboxes = $redux->extensions['metaboxes'];
+
+		$metaboxes->loop_end();
+	}
+}
+
+if ( ! function_exists( 'redux_post_meta' ) ) {
+	/**
+	 * Retrieve post meta values/settings.
+	 *
+	 * @param string $opt_name Panel opt_name.
+	 * @param mixed  $the_post Post ID.
+	 * @param string $meta_key Meta key.
+	 * @param mixed  $def_val  Default value.
+	 *
+	 * @return string|void
+	 */
+	function redux_post_meta( string $opt_name = '', $the_post = array(), string $meta_key = '', $def_val = '' ) {
+		return Redux::get_post_meta( $opt_name, $the_post, $meta_key, $def_val );
+	}
+}

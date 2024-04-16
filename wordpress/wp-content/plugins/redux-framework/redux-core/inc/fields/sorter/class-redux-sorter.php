@@ -198,7 +198,7 @@ if ( ! class_exists( 'Redux_Sorter', false ) ) {
 		public function enqueue() {
 			if ( $this->parent->args['dev_mode'] ) {
 				wp_enqueue_style(
-					'redux-field-sorter',
+					'redux-field-sorter-css',
 					Redux_Core::$url . 'inc/fields/sorter/redux-sorter.css',
 					array(),
 					$this->timestamp
@@ -206,7 +206,7 @@ if ( ! class_exists( 'Redux_Sorter', false ) ) {
 			}
 
 			wp_enqueue_script(
-				'redux-field-sorter',
+				'redux-field-sorter-js',
 				Redux_Core::$url . 'inc/fields/sorter/redux-sorter' . Redux_Functions::is_min() . '.js',
 				array( 'jquery', 'redux-js', 'jquery-ui-sortable' ),
 				$this->timestamp,
@@ -226,7 +226,7 @@ if ( ! class_exists( 'Redux_Sorter', false ) ) {
 		public function localize( array $field, string $value = '' ): array {
 			$params = array();
 
-			if ( ! empty( $field['limits'] ) ) {
+			if ( isset( $field['limits'] ) && ! empty( $field['limits'] ) ) {
 				$params['limits'] = $field['limits'];
 			}
 

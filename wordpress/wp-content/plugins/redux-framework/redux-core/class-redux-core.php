@@ -94,7 +94,14 @@ if ( ! class_exists( 'Redux_Core', false ) ) {
 		public static $in_theme = false;
 
 		/**
-		 * Pointer to an updated Google fonts array.
+		 * Set when Redux Pro plugin is loaded and active.
+		 *
+		 * @var bool
+		 */
+		public static $pro_loaded = false;
+
+		/**
+		 * Pointer to updated google fonts array.
 		 *
 		 * @var array
 		 */
@@ -129,6 +136,13 @@ if ( ! class_exists( 'Redux_Core', false ) ) {
 		public static $welcome = null;
 
 		/**
+		 * Flag for Extendify Template enabled status.
+		 *
+		 * @var bool
+		 */
+		public static $extendify_templates_enabled = true;
+
+		/**
 		 * Creates instance of class.
 		 *
 		 * @return Redux_Core
@@ -151,12 +165,15 @@ if ( ! class_exists( 'Redux_Core', false ) ) {
 		/**
 		 * Things to run after pluggable.php had loaded.
 		 */
-		public static function plugins_loaded() {}
+		public static function plugins_loaded() {
+			Redux_Functions_Ex::pro_to_ext();
+		}
 
 		/**
 		 * Class init.
 		 */
 		private function init() {
+
 			self::$server = array(
 				'SERVER_SOFTWARE' => '',
 				'REMOTE_ADDR'     => Redux_Helpers::is_local_host() ? '127.0.0.1' : '',
@@ -233,14 +250,15 @@ if ( ! class_exists( 'Redux_Core', false ) ) {
 		}
 
 		/**
-		 * Code to execute on a framework __construct.
+		 * Code to execute on framework __construct.
 		 *
-		 * @param object $redux Pointer to ReduxFramework object.
+		 * @param object $parent Pointer to ReduxFramework object.
 		 */
-		public static function core_construct( $redux ) {
-			self::$third_party_fixes = new Redux_ThirdParty_Fixes( $redux );
+		public static function core_construct( $parent ) {
+			self::$third_party_fixes = new Redux_ThirdParty_Fixes( $parent );
 
 			Redux_ThemeCheck::get_instance();
+
 		}
 
 		/**
@@ -250,23 +268,23 @@ if ( ! class_exists( 'Redux_Core', false ) ) {
 		 */
 		private function includes() {
 			if ( class_exists( 'Redux_Pro' ) && isset( Redux_Pro::$dir ) ) {
-				echo '<div class="error"><p>' . sprintf( esc_html__( 'Redux has detected the Redux Pro plugin is enabled. All featured of Redux Pro are now part of the entire Redux plugin and is no longer required. Please disable the Redux Pro plugin to avoid potential conflicts.', 'redux-framework' ), '<code></code>' ) . '</p></div>';
+				self::$pro_loaded = true;
 			}
 
-			require_once __DIR__ . '/inc/classes/class-redux-path.php';
-			require_once __DIR__ . '/inc/classes/class-redux-functions-ex.php';
-			require_once __DIR__ . '/inc/classes/class-redux-helpers.php';
-			require_once __DIR__ . '/inc/classes/class-redux-instances.php';
+			require_once dirname( __FILE__ ) . '/inc/classes/class-redux-path.php';
+			require_once dirname( __FILE__ ) . '/inc/classes/class-redux-functions-ex.php';
+			require_once dirname( __FILE__ ) . '/inc/classes/class-redux-helpers.php';
+			require_once dirname( __FILE__ ) . '/inc/classes/class-redux-instances.php';
 
-			Redux_Functions_Ex::register_class_path( 'Redux', __DIR__ . '/inc/classes' );
-			Redux_Functions_Ex::register_class_path( 'Redux', __DIR__ . '/inc/welcome' );
-			Redux_Functions_Ex::load_extendify_css();
-
+			Redux_Functions_Ex::register_class_path( 'Redux', dirname( __FILE__ ) . '/inc/classes' );
+			Redux_Functions_Ex::register_class_path( 'Redux', dirname( __FILE__ ) . '/inc/welcome' );
 			spl_autoload_register( array( $this, 'register_classes' ) );
 
 			self::$welcome = new Redux_Welcome();
+			new Redux_Rest_Api_Builder();
 
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
+
 			add_filter( 'debug_information', array( $this, 'add_debug_info' ) );
 		}
 
@@ -276,6 +294,7 @@ if ( ! class_exists( 'Redux_Core', false ) ) {
 		 * @param array $debug_info Debug data.
 		 *
 		 * @return array
+		 * @noinspection PhpIncludeInspection
 		 * @throws ReflectionException Exception.
 		 */
 		public function add_debug_info( array $debug_info ): array {

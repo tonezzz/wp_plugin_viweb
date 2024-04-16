@@ -45,15 +45,15 @@ if ( ! class_exists( 'Redux_Options_Defaults', false ) ) {
 		private $repeater_id = '';
 
 		/**
-		 * Creates a default options array.
+		 * Creates default options array.
 		 *
 		 * @param string $opt_name      Panel opt_name.
 		 * @param array  $sections      Panel sections array.
 		 * @param null   $wp_data_class WordPress data class.
 		 *
-		 * @return array
+		 * @return array|string
 		 */
-		public function default_values( string $opt_name = '', array $sections = array(), $wp_data_class = null ): array {
+		public function default_values( string $opt_name = '', array $sections = array(), $wp_data_class = null ) {
 			// We want it to be clean each time this is run.
 			$this->options_defaults = array();
 
@@ -87,18 +87,6 @@ if ( ! class_exists( 'Redux_Options_Defaults', false ) ) {
 
 							$this->field_default_values( $opt_name, $field, $wp_data_class, false );
 
-							if ( 'tabbed' === $field['type'] ) {
-								if ( ! empty( $field['tabs'] ) ) {
-									foreach ( $field['tabs'] as $val ) {
-										if ( ! empty( $val['fields'] ) ) {
-											foreach ( $val['fields'] as $f ) {
-												$this->field_default_values( $opt_name, $f, $wp_data_class, false, true );
-											}
-										}
-									}
-								}
-							}
-
 							if ( 'repeater' === $field['type'] ) {
 								if ( ! empty( $field['fields'] ) ) {
 									foreach ( $field['fields'] as $f ) {
@@ -120,10 +108,9 @@ if ( ! class_exists( 'Redux_Options_Defaults', false ) ) {
 		 * @param string $opt_name      Panel opt_name.
 		 * @param array  $field         Field array.
 		 * @param null   $wp_data_class WordPress data class.
-		 * @param bool   $is_repeater   Is a repeater field.
-		 * @param bool   $is_tabbed     Is a tabbed field.
+		 * @param bool   $is_repeater   Is repeater field.
 		 */
-		public function field_default_values( string $opt_name = '', array $field = array(), $wp_data_class = null, bool $is_repeater = false, $is_tabbed = false ) {
+		public function field_default_values( string $opt_name = '', array $field = array(), $wp_data_class = null, bool $is_repeater = false ) {
 			if ( 'repeater' === $field['type'] ) {
 				if ( isset( $field['group_values'] ) && true === $field['group_values'] ) {
 					$this->is_repeater_group = true;
@@ -152,11 +139,10 @@ if ( ! class_exists( 'Redux_Options_Defaults', false ) ) {
 					} else {
 						$this->options_defaults[ $field['id'] ] = array( $def );
 					}
-				} elseif ( true === $is_tabbed ) {
-					$this->options_defaults[ $field['id'] ] = $def;
 				} else {
 					$this->options_defaults[ $field['id'] ] = $def;
 				}
+
 			} elseif ( ( 'ace_editor' !== $field['type'] ) && ! ( 'select' === $field['type'] && ! empty( $field['ajax'] ) ) ) {
 				if ( isset( $field['data'] ) ) {
 					if ( ! isset( $field['args'] ) ) {

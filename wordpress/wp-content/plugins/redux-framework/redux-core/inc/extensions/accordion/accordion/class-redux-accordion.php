@@ -85,6 +85,7 @@ if ( ! class_exists( 'Redux_Accordion' ) ) {
 			echo '</div>';
 			echo '</div>';
 			echo '<table id="accordion-table-' . esc_attr( $this->field['id'] ) . '" data-id="' . esc_attr( $this->field['id'] ) . '" class="form-table form-table-accordion no-border' . esc_attr( $add_class ) . '"><tbody><tr class="hide"><th></th><td id="' . esc_attr( $guid ) . '">';
+
 		}
 
 		/**
@@ -102,7 +103,7 @@ if ( ! class_exists( 'Redux_Accordion' ) ) {
 
 			// Field dependent JS.
 			wp_enqueue_script(
-				'redux-field-accordion',
+				'redux-field-accordion-js',
 				$this->url . 'redux-accordion' . $min . '.js',
 				array( 'jquery', 'redux-js' ),
 				Redux_Extension_Accordion::$version,

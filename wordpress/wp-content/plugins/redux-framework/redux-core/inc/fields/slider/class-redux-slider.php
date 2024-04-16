@@ -100,15 +100,15 @@ if ( ! class_exists( 'Redux_Slider', false ) ) {
 		/**
 		 * Sanitize value.
 		 *
-		 * @param mixed $val Value to sanitize.
+		 * @param mixed $var Value to sanitize.
 		 *
 		 * @return float|int
 		 */
-		private function clean_val( $val ) {
-			if ( is_float( $val ) ) {
-				$clear_var = floatval( $val );
+		private function clean_val( $var ) {
+			if ( is_float( $var ) ) {
+				$clear_var = floatval( $var );
 			} else {
-				$clear_var = intval( $val );
+				$clear_var = intval( $var );
 			}
 
 			return $clear_var;
@@ -234,17 +234,17 @@ if ( ! class_exists( 'Redux_Slider', false ) ) {
 		public function enqueue() {
 			$min = Redux_Functions::is_min();
 
-			wp_enqueue_style( 'select2-js' );
+			wp_enqueue_style( 'select2-css' );
 
 			wp_enqueue_style(
-				'redux-nouislider',
+				'redux-nouislider-css',
 				Redux_Core::$url . "assets/css/vendor/nouislider$min.css",
 				array(),
 				'5.0.0'
 			);
 
 			wp_register_script(
-				'redux-nouislider',
+				'redux-nouislider-js',
 				Redux_Core::$url . 'assets/js/vendor/nouislider/redux.jquery.nouislider' . $min . '.js',
 				array( 'jquery' ),
 				'5.0.0',
@@ -252,16 +252,16 @@ if ( ! class_exists( 'Redux_Slider', false ) ) {
 			);
 
 			wp_enqueue_script(
-				'redux-field-slider',
+				'redux-field-slider-js',
 				Redux_Core::$url . 'inc/fields/slider/redux-slider' . $min . '.js',
-				array( 'jquery', 'redux-nouislider', 'redux-js', 'select2-js' ),
+				array( 'jquery', 'redux-nouislider-js', 'redux-js', 'select2-js' ),
 				$this->timestamp,
 				true
 			);
 
 			if ( $this->parent->args['dev_mode'] ) {
 				wp_enqueue_style(
-					'redux-field-slider',
+					'redux-field-slider-css',
 					Redux_Core::$url . 'inc/fields/slider/redux-slider.css',
 					array(),
 					$this->timestamp

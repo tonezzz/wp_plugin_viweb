@@ -11,13 +11,14 @@
 
 	var l10n;
 
-	redux.field_objects             = redux.field_objects || {};
-	redux.field_objects.multi_media = redux.field_objects.multi_media || {};
+	redux.field_objects                    = redux.field_objects || {};
+	redux.field_objects.multi_media        = redux.field_objects.multi_media || {};
+	redux.field_objects.multi_media.mainID = '';
 
 	/*******************************************************************************
 	 * Function: init
 	 *
-	 * Runs when the library is loaded.
+	 * Runs when library is loaded.
 	 ******************************************************************************/
 	redux.field_objects.multi_media.init = function( selector ) {
 
@@ -82,10 +83,13 @@
 	 *
 	 * Module level init
 	 ******************************************************************************/
-	redux.field_objects.multi_media.modInit = function() {
+	redux.field_objects.multi_media.modInit = function( el ) {
 
 		// Localization variable.
 		l10n = redux_multi_media_l10;
+
+		// MainID into global variable.
+		redux.field_objects.multi_media.mainID = el.attr( 'data-id' );
 	};
 
 	/*******************************************************************************
@@ -96,10 +100,10 @@
 	 ******************************************************************************/
 
 	// Removes error message(s) when clicking the Upload button.
-	redux.field_objects.multi_media.removeErrMsgs = function( mainID ) {
+	redux.field_objects.multi_media.removeErrMsgs = function() {
 
 		// Enumerate and remove existing 'file exists' messages.
-		$( '#' + mainID + ' .attach_list li.redux-file-exists' ).each(
+		$( '#' + redux.field_objects.multi_media.mainID + ' .attach_list li.redux-file-exists' ).each(
 			function( idx, li ) {
 				idx = null;
 
@@ -108,7 +112,7 @@
 		);
 
 		// Enumerate and remove existing 'max upload' messages.
-		$( '#' + mainID + ' .attach_list li.redux-max-limit' ).each(
+		$( '#' + redux.field_objects.multi_media.mainID + ' .attach_list li.redux-max-limit' ).each(
 			function( idx, li ) {
 				idx = null;
 
@@ -118,13 +122,13 @@
 	};
 
 	// Checks for duplicate after file selection.
-	redux.field_objects.multi_media.selExists = function( mainID, item ) {
+	redux.field_objects.multi_media.selExists = function( item ) {
 		var len;
 
 		var val = false;
 
 		// Enumerate existing files.
-		$( '#' + mainID + ' .attach_list li' ).each(
+		$( '#' + redux.field_objects.multi_media.mainID + ' .attach_list li' ).each(
 			function( idx, li ) {
 				idx = null;
 
@@ -168,8 +172,6 @@
 		// Get form name.
 		var formName = $formfield.attr( 'name' );
 
-		var mainID = selector.attr( 'data-id' );
-
 		// Prevent default action.
 		event.preventDefault();
 
@@ -180,7 +182,7 @@
 		}
 
 		// Remove existing error messages.
-		redux.field_objects.multi_media.removeErrMsgs( mainID );
+		redux.field_objects.multi_media.removeErrMsgs();
 
 		// Get library filter data.
 		filter = $( selector ).find( '.library-filter' ).data( 'lib-filter' );
@@ -241,7 +243,7 @@
 				var attachment = selection.toJSON();
 
 				// Get existing file count.
-				var childCount = $( '#' + mainID + ' .attach_list' ).children().length;
+				var childCount = $( '#' + redux.field_objects.multi_media.mainID + ' .attach_list' ).children().length;
 
 				$formfield.val( attachment.url );
 				$( '#' + inputID + '_id' ).val( attachment.id );
@@ -256,7 +258,7 @@
 						if ( maxFileUpload <= 0 || ( addCount + childCount ) < maxFileUpload ) {
 
 							// Check for duplicates and format duplicate message.
-							if ( redux.field_objects.multi_media.selExists( mainID, this.id ) ) {
+							if ( redux.field_objects.multi_media.selExists( this.id ) ) {
 								dupMsg       = l10n.dup_warn;
 								dupMsg       = dupMsg.replace( '%s', '<strong>' + this.filename + '</strong>' );
 								uploadStatus = '<li class="redux-file-exists">' + dupMsg + '</li>';
@@ -293,7 +295,7 @@
 							}
 
 							// Increment count of added files.
-							addCount++; // += 1;
+							addCount += 1;
 
 							// If max file upload reached, generate error message.
 						} else {

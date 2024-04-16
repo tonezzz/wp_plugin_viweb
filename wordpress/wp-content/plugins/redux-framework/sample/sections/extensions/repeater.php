@@ -3,7 +3,7 @@
  * Redux Repeater Sample config.
  * For full documentation, please visit: http:https://devs.redux.io/
  *
- * @package Redux
+ * @package Redux Pro
  */
 
 defined( 'ABSPATH' ) || exit;

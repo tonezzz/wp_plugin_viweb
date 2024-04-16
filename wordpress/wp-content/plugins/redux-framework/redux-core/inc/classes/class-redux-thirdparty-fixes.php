@@ -19,40 +19,20 @@ if ( ! class_exists( 'Redux_ThirdParty_Fixes', false ) ) {
 		/**
 		 * Redux_ThirdParty_Fixes constructor.
 		 *
-		 * @param object $redux ReduxFramework pointer.
+		 * @param object $parent ReduxFramework pointer.
 		 */
-		public function __construct( $redux ) {
-			parent::__construct( $redux );
+		public function __construct( $parent ) {
+			parent::__construct( $parent );
 
 			$this->gt3_page_builder();
 
-			// These are necessary to override an outdated extension embedded in themes
+			// These are necessary to override outdated extension embedded in themes
 			// that are loaded via the antiquated 'loader.php' method.
-			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/repeater', array( $this, 'repeater_extension_override' ) );
-			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/metaboxes', array( $this, 'metaboxes_extension_override' ) );
-			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/social_profiles', array( $this, 'social_profiles_extension_override' ) );
-			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/widget_areas', array( $this, 'widget_areas_extension_override' ) );
-			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/custom_fonts', array( $this, 'custom_fonts_extension_override' ) );
-			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/icon_select', array( $this, 'icon_select_extension_override' ) );
-			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/color_scheme', array( $this, 'color_scheme_extension_override' ) );
-		}
-
-		/**
-		 * Color Scheme extension override.
-		 *
-		 * @return string
-		 */
-		public function color_scheme_extension_override(): string {
-			return Redux_core::$dir . 'inc/extensions/color_scheme/class-redux-extension-color-scheme.php';
-		}
-
-		/**
-		 * Icon Select extension override.
-		 *
-		 * @return string
-		 */
-		public function icon_select_extension_override(): string {
-			return Redux_core::$dir . 'inc/extensions/icon_select/class-redux-extension-icon-select.php';
+			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/repeater', array( $this, 'repeater_extension_override' ), 10, 1 );
+			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/metaboxes', array( $this, 'metaboxes_extension_override' ), 10, 1 );
+			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/social_profiles', array( $this, 'social_profiles_extension_override' ), 10, 1 );
+			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/widget_areas', array( $this, 'widget_areas_extension_override' ), 10, 1 );
+			add_filter( 'redux/extension/' . $this->parent->args['opt_name'] . '/custom_fonts', array( $this, 'custom_fonts_extension_override' ), 10, 1 );
 		}
 
 		/**

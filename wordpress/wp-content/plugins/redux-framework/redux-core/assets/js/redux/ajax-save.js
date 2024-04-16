@@ -79,9 +79,7 @@
 					data:       $data
 				},
 				error: function( response ) {
-					var input = $( '.redux-action_bar input' );
-
-					input.prop( 'disabled', false );
+					$( '.redux-action_bar input' ).prop( 'disabled', false );
 
 					if ( true === redux.optName.args.dev_mode ) {
 						console.log( response.responseText );
@@ -93,7 +91,7 @@
 						redux.optName.args.ajax_save = false;
 
 						$( button ).trigger( 'click' );
-						input.prop( 'disabled', true );
+						$( '.redux-action_bar input' ).prop( 'disabled', true );
 					}
 				},
 				success: function( response ) {

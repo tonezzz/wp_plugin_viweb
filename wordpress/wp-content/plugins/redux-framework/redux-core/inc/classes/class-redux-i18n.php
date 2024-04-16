@@ -18,18 +18,22 @@ if ( ! class_exists( 'Redux_I18n', false ) ) {
 		/**
 		 * Redux_I18n constructor.
 		 *
-		 * @param object $redux ReduxFramework pointer.
+		 * @param object $parent ReduxFramework pointer.
+		 * @param string $file Translation file.
 		 */
-		public function __construct( $redux ) {
-			parent::__construct( $redux );
+		public function __construct( $parent, string $file ) {
+			parent::__construct( $parent );
 
 			add_action( 'init', array( $this, 'load' ) );
+			//$this->load( $file );
 		}
 
 		/**
 		 * Load translations.
+		 *
+		 * @param string $file Path to translation files.
 		 */
-		public function load() {
+		public function load( string $file ) {
 			$domain = 'redux-framework';
 
 			unload_textdomain( $domain );
@@ -52,7 +56,7 @@ if ( ! class_exists( 'Redux_I18n', false ) ) {
 			if ( ! $loaded ) {
 				$mofile = WP_LANG_DIR . '/plugins/' . $mofile;
 
-				load_textdomain( $domain, $mofile );
+				$loaded = load_textdomain( $domain, $mofile );
 			}
 		}
 	}

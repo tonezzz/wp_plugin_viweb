@@ -2,6 +2,9 @@
 /**
  * Redux Framework Sample Metabox Config File
  * For full documentation, please visit: http:https://devs.redux.io/
+ * Metabox Lite support the following fields only:  checkbox, radio, text, textarea, media, & color
+ * Post Format and Post Template options are not avaialble in Metabox Lite.
+ * These advanced options are available in Redux Pro.
  *
  * @package Redux Framework
  */
@@ -123,7 +126,7 @@ Redux_Metaboxes::set_box(
 					array(
 						'id'       => 'opt-color',
 						'type'     => 'color',
-						'title'    => esc_html__( 'Color Field', 'your-textdomain-here' ),
+						'title'    => __( 'Color Field', 'your-textdomain-here' ),
 						'default'  => '#333333',
 						'required' => array( 'opt-layout', '=', 'on' ),
 					),
@@ -159,7 +162,7 @@ Redux_Metaboxes::set_box(
 						'id'       => 'slides',
 						'type'     => 'slides',
 						'title'    => esc_html__( 'Slides Options', 'your-textdomain-here' ),
-						'subtitle' => esc_html__( 'Unlimited slides with drag and drop sorting.', 'your-textdomain-here' ),
+						'subtitle' => esc_html__( 'Unlimited slides with drag and drop sortings.', 'your-textdomain-here' ),
 						'desc'     => esc_html__( 'This field will store all slides values into a multidimensional array to use into a foreach loop.', 'your-textdomain-here' ),
 					),
 				),

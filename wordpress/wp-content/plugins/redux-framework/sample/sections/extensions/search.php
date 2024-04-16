@@ -1,6 +1,6 @@
 <?php
 /**
- * Redux Search Sample config.
+ * Redux Pro Search Sample config.
  *
  * For full documentation, please visit: http:https://devs.redux.io/
  *
