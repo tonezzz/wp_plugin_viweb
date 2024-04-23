@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.0-fpm
 
 # Update package repo data
 RUN apt update
@@ -34,6 +34,20 @@ RUN apt clean && rm -rf /var/lib/apt/lists/*
 
 # Change user id & group id for docker host accessible
 RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
+
+# 20240419:Tony:Adding required lib for Elementor
+#RUN apt update \
+#    && apt install -y zip libzip-dev libjpeg-dev \
+#    && docker-php-ext-install zip \
+#    && docker-php-ext-install gd \
+#    && docker-php-ext-configure gd --with-jpeg \
+#    && docker-php-ext-configure zip
+
+RUN apt update \
+    && apt install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+    # configure the GD extension to include support for JPEG and PNG image formats
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd
 
 # Change working directory
 WORKDIR /usr/local/apache2/htdocs

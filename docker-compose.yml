@@ -24,6 +24,7 @@ services:
       - ./dockers/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
       - ./dockers/apache/httpd-ssl.conf/usr/local/apache2/conf/extra/httpd-ssl.conf
       - ./dockers/apache/sites-enabled:/etc/apache2/sites-enabled
+      - ./dockers/apache/config-available:/etc/apache2/config-available
       - ./persistent-data/uploads:/usr/local/apache2/htdocs/wp-content/uploads
       - ./persistent-data/letsencrypt:/etc/letsencrypt1
       - ./persistent-data/letsencrypt/live/thakarn.gizmo-thailand.com/fullchain.pem:/usr/local/apache2/conf/server.crt
