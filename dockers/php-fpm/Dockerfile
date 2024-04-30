@@ -44,7 +44,7 @@ RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
 #    && docker-php-ext-configure zip
 
 RUN apt update \
-    && apt install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+    && apt install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev librsvg2-bin \
     # configure the GD extension to include support for JPEG and PNG image formats
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd

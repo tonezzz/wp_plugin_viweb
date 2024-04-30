@@ -43,6 +43,7 @@ export const Topbar = () => {
 				<button
 					className="text-banner-text fill-banner-text border-0 bg-transparent p-0 m-0 cursor-pointer"
 					type="button"
+					data-test="help-center-toggle-minimize-button"
 					onClick={toggleMinimized}>
 					{isMinimized ? (
 						<>
@@ -67,6 +68,7 @@ export const Topbar = () => {
 				<button
 					className="text-banner-text fill-banner-text border-0 bg-transparent p-0 m-0 cursor-pointer"
 					type="button"
+					data-test="help-center-close-button"
 					onClick={handleClose}>
 					<Icon icon={closeSmall} size={24} />
 					<span className="sr-only">{__('close', 'extendify-local')}</span>
@@ -94,7 +96,7 @@ const LogoOrBackButton = () => {
 
 	return partnerLogo ? (
 		<div className="bg-banner-main flex justify-center h-6 after:text-banner-text after:opacity-40 after:relative after:-right-2 after:top-0.5 after:content-['|']">
-			<div className="flex items-center h-6 overflow-hidden max-w-[9rem]">
+			<div className="flex h-6 overflow-hidden max-w-[9rem]">
 				<img
 					className="max-w-full max-h-full object-contain"
 					src={partnerLogo}
