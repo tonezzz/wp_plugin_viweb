@@ -26,3 +26,10 @@ gz_load_module_2(['action'=>'load','type'=>'lib','name'=>'gz_multilang','version
 
 //gz_load_module_2(['action'=>'load','type'=>'fix','name'=>'mv_fix_lang','version'=>'','init'=>true]);
 //gz_load_module_2(['action'=>'load' ,'type'=>'lib','name'=>'mv_gen_image','version'=>'v2.00','init'=>true]);
+
+function gz_svg_mime_type( $mimes = array() ) {
+  $mimes['svg']  = 'image/svg+xml';
+  $mimes['svgz'] = 'image/svg+xml';
+  return $mimes;
+}
+add_filter( 'upload_mimes', 'gz_svg_mime_type' );   

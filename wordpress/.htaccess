@@ -14,3 +14,7 @@ RewriteRule . /index.php [L]
 </IfModule>
 
 # END WordPress
+
+# Add SVG Mime Types
+AddType image/svg+xml svg
+AddType image/svg+xml svgz
