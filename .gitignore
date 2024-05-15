@@ -18,6 +18,11 @@
 /wp-*.php
 /xmlrpc.php
 
+/wp-content/themes/twentytwenty*
+/wp-content/plugins/pr-*
+/wp-content/plugins/pr-b43dcf6a-3.21.4-ver-elementor
+*.tmb
+
 # Configuration
 wp-config.php
 
@@ -51,7 +56,4 @@ wp-config.php
 #
 # Note: If you wish to whitelist themes,
 # uncomment the next line
-#/wp-content/themes
-wordpress/wp-content/plugins/pr-*
-wordpress/.tmb
 
