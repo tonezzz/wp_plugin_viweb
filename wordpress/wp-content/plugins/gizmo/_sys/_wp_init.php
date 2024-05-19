@@ -15,7 +15,7 @@ add_filter( 'upload_mimes', function() {
 //For woocommerce import
 */
 
-require dirname(__FILE__) .'/lib/gz_ut_v0.03.php';
+require dirname(__FILE__) .'/lib/gz_ut_v0.04.php';
 
 gz_load_module_2(['action'=>'load','type'=>'lib0','name'=>'gz_tpl','version'=>'v0.14','init'=>true]);
 gz_load_module_2(['action'=>'load','type'=>'lib','name'=>'gz_multilang','version'=>'','init'=>true]);
@@ -27,9 +27,9 @@ gz_load_module_2(['action'=>'load','type'=>'lib','name'=>'gz_multilang','version
 //gz_load_module_2(['action'=>'load','type'=>'fix','name'=>'mv_fix_lang','version'=>'','init'=>true]);
 //gz_load_module_2(['action'=>'load' ,'type'=>'lib','name'=>'mv_gen_image','version'=>'v2.00','init'=>true]);
 
-function gz_svg_mime_type( $mimes = array() ) {
-  $mimes['svg']  = 'image/svg+xml';
-  $mimes['svgz'] = 'image/svg+xml';
-  return $mimes;
-}
-add_filter( 'upload_mimes', 'gz_svg_mime_type' );   
+//function gz_svg_mime_type( $mimes = array() ) {
+//  $mimes['svg']  = 'image/svg+xml';
+//  $mimes['svgz'] = 'image/svg+xml';
+//  return $mimes;
+//}
+//add_filter( 'upload_mimes', 'gz_svg_mime_type' );   
