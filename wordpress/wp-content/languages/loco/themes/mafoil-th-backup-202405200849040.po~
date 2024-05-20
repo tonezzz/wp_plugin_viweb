@@ -16,7 +16,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-06 13:12+0000\n"
-"PO-Revision-Date: 2024-05-20 08:49+0000\n"
+"PO-Revision-Date: 2024-05-20 08:47+0000\n"
 "Last-Translator: \n"
 "Language-Team: ไทย\n"
 "Language: th\n"
@@ -389,7 +389,7 @@ msgstr ""
 
 #: woocommerce/order/form-tracking.php:24
 msgid "Cart"
-msgstr "ตะกร้าสินค้า"
+msgstr ""
 
 #: inc/admin/theme-options.php:369
 msgid "Cart Layout"

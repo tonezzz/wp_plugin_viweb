@@ -16,7 +16,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-05-06 13:12+0000\n"
-"PO-Revision-Date: 2024-05-20 08:49+0000\n"
+"PO-Revision-Date: 2024-05-19 12:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: ไทย\n"
 "Language: th\n"
@@ -49,7 +49,7 @@ msgstr "สินค้า"
 
 #: woocommerce/loop/woocommerce-found-posts.php:6
 msgid " products"
-msgstr "สินค้า"
+msgstr ""
 
 #: inc/admin/theme-options.php:1497
 msgid "\"HOT\" Text"
@@ -389,7 +389,7 @@ msgstr ""
 
 #: woocommerce/order/form-tracking.php:24
 msgid "Cart"
-msgstr "ตะกร้าสินค้า"
+msgstr ""
 
 #: inc/admin/theme-options.php:369
 msgid "Cart Layout"
@@ -1340,7 +1340,7 @@ msgstr ""
 
 #: inc/woocommerce.php:249
 msgid "Notify Me When Available"
-msgstr "เตือนฉันเมื่อมีสินค้า"
+msgstr ""
 
 #: inc/admin/theme-options.php:326
 msgid "Number Of Repetitions Marquee"
@@ -1401,7 +1401,7 @@ msgstr ""
 
 #: woocommerce/content-grid-product.php:151
 msgid "Out Of Stock"
-msgstr "สินค้าหมด"
+msgstr ""
 
 #: inc/admin/theme-options.php:1364
 msgid "Outsite"
