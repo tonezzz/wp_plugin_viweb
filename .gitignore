@@ -57,3 +57,4 @@ wp-config.php
 # Note: If you wish to whitelist themes,
 # uncomment the next line
 
+wordpress/wp-content/plugins/gizmo/_sys/lib
