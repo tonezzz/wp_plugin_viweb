@@ -1,0 +1,3 @@
+[submodule "wordpress/wp-content/plugins/gizmo/_sys/img/logo-banks"]
+	path = wordpress/wp-content/plugins/gizmo/_sys/img/logo-banks
+	url = https://github.com/tonezzz/logo-banks
