@@ -1,4 +1,4 @@
-#wordpress/wp-content/plugins/gizmo/_sys/lib
+docker-ut.yml
 
 # Wordpress - ignore core, configuration, examples, uploads and logs.
 # https://github.com/github/gitignore/blob/main/WordPress.gitignore
