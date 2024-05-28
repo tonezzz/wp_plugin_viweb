@@ -17,7 +17,7 @@ add_filter( 'upload_mimes', function() {
 
 require dirname(__FILE__) .'/lib/gz_ut_v0.04.php';
 
-gz_load_module_2(['action'=>'load','type'=>'lib0','name'=>'gz_tpl','version'=>'v0.14','init'=>true]);
+gz_load_module_2(['action'=>'load','type'=>'lib0','name'=>'gz_tpl','version'=>'v0.15','init'=>true]);
 gz_load_module_2(['action'=>'load','type'=>'lib','name'=>'gz_multilang','version'=>'','init'=>true]);
 
 //gz_load_module_2(['action'=>'load','type'=>'lib0','name'=>'gz_facebook','version'=>'v0.02','init'=>true]);
