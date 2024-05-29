@@ -100,6 +100,7 @@ class gz_multilang extends gz_tpl{
 			],
 			'actions' => [
 				['prm'=>['cmb2_admin_init',[$this,'cmb2_admin_init']]],
+				['prm'=>['cmb2_init',[$this,'cmb2_init']]],
 				//['prm'=>['woocommerce_product_additional_information',[$this,'woocommerce_product_additional_information'],21,2]],
 				//['prm'=>['init',[$this,'init_lang'],0]],
 				///['prm'=>['template_redirect',[$this,'template_redirect'],0]],
@@ -132,9 +133,10 @@ class gz_multilang extends gz_tpl{
 		$this->cmb2_menu_item = new CMB2($this->cmb2_menu_item_prm);
 		add_action('wp_nav_menu_item_custom_fields',[$this,'wp_nav_menu_item_custom_fields'],10,4);
 		add_action('wp_update_nav_menu_item',[$this,'wp_update_nav_menu_item'],10,3);
+	}
+	function cmb2_init(){
 		add_filter('nav_menu_item_title',[$this,'nav_menu_item_title'],10,4);
 	}
-
 	//function wp_nav_menu_item_custom_fields($item_id, $menu_item, $depth, $args, $current_object_id ) {
 	function wp_nav_menu_item_custom_fields($item_id, $menu_item, $depth, $args ) {
 		cmb2_print_metabox_form('gz_menu_item');
@@ -151,7 +153,7 @@ class gz_multilang extends gz_tpl{
 		$rs = wp_update_post( ['ID'=>$menu_item_db_id,'meta_input'=>$metas] );
 	}
 	function nav_menu_item_title( string $title, WP_Post $menu_item, stdClass $args, int $depth ){
-		//if(isset($_GET['d'])) die('<pre>'.print_r(compact('title','menu_item','args','depth'),true));
+		if(isset($_GET['d'])) die('<pre>'.print_r(compact('title','menu_item','args','depth'),true));
 		return "Hello";
 		return $title;
 	}
