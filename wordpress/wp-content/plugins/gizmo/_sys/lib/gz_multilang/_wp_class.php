@@ -1,4 +1,4 @@
-<?php
+<?php //die(__FILE__);
 /*
 * gz_facebook() class.
 *	- Render page badge in iFrame.
@@ -14,8 +14,13 @@
 die
 */
 
-//include dirname(__FILE__)."/ut.php";
 global $gz_locale;
+if(is_admin()){
+	//include dirname(__FILE__)."/cmb2-nav-menus/cmb2-nav-menus.php";
+	//include dirname(__FILE__)."/cmb2_nav_menus.php";
+	//include dirname(__FILE__).'/sweet-custom-menu/custom_walker.php';
+	//include dirname(__FILE__).'/sweet-custom-menu/edit_custom_walker.php';
+}
 
 class gz_multilang extends gz_tpl{
 	public $the_content_off=false;
@@ -36,7 +41,7 @@ class gz_multilang extends gz_tpl{
 			'cmb2v2' => [
 				['prm'=> [
 					'id'					=> 'en',
-					'title' 				=> __('English','woocommerce'),
+					'title' 				=> __('English',$this->text_domain),
 					'object_types'			=> ['post','page','product','nav_menu_item'],
 					'context'				=> 'normal',
 					'fields' 				=> [
@@ -52,7 +57,7 @@ class gz_multilang extends gz_tpl{
 						'id'					=> 'gz_term',
 						'title' 				=> __('English',$this->text_domain),
 						'object_types'			=> ['term'],
-						'taxonomies'       		=> array( 'category', 'post_tag', 'product_cat' ),
+						'taxonomies'       		=> [ 'category', 'post_tag', 'product_cat' ],
 						'fields' 				=> [
 							['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text'],
 						]
@@ -68,6 +73,7 @@ class gz_multilang extends gz_tpl{
 				//['prm'=>['woocommerce_before_main_content','woocommerce_breadcrumb',20]],
 			],
 			'filters' => [
+
 				['prm'=>['the_title',[$this,'the_title'],10,2]],
 				['prm'=>['the_content',[$this,'the_content'],10,2]],
 				//['prm'=>['get_the_excerpt',[$this,'get_the_excerpt'],21,2]],
@@ -93,6 +99,7 @@ class gz_multilang extends gz_tpl{
 			'remove_actions' => [
 			],
 			'actions' => [
+				['prm'=>['cmb2_admin_init',[$this,'cmb2_admin_init']]],
 				//['prm'=>['woocommerce_product_additional_information',[$this,'woocommerce_product_additional_information'],21,2]],
 				//['prm'=>['init',[$this,'init_lang'],0]],
 				///['prm'=>['template_redirect',[$this,'template_redirect'],0]],
@@ -107,8 +114,48 @@ class gz_multilang extends gz_tpl{
 			],
 		];
 		parent::__construct($config);
-		add_action('init',[$this,'after_setup_theme'],10,2);
+		//add_action('init',[$this,'after_setup_theme'],10,2);
 	}
+
+	/**
+	 * Adding language support fields to each menu item.
+	 */
+	function cmb2_admin_init(){
+		$this->cmb2_menu_item_prm = [
+			'id'					=> 'gz_menu_item',
+			'title' 				=> __('English',$this->text_domain),
+			'object_types'			=> ['nav_menu_item'],
+			'fields' 				=> [
+				['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text'],
+			]
+		];
+		$this->cmb2_menu_item = new CMB2($this->cmb2_menu_item_prm);
+		add_action('wp_nav_menu_item_custom_fields',[$this,'wp_nav_menu_item_custom_fields'],10,4);
+		add_action('wp_update_nav_menu_item',[$this,'wp_update_nav_menu_item'],10,3);
+		add_filter('nav_menu_item_title',[$this,'nav_menu_item_title'],10,4);
+	}
+
+	//function wp_nav_menu_item_custom_fields($item_id, $menu_item, $depth, $args, $current_object_id ) {
+	function wp_nav_menu_item_custom_fields($item_id, $menu_item, $depth, $args ) {
+		cmb2_print_metabox_form('gz_menu_item');
+	}
+	function wp_update_nav_menu_item($menu_id, $menu_item_db_id, $menu_item_args) { //return;
+		if (defined('DOING_AJAX') && DOING_AJAX) return;
+
+		if (!isset($_GET['edit-menu-item'])) return;
+		check_admin_referer('update-nav_menu', 'update-nav-menu-nonce');
+		$metas = [];
+		foreach($this->cmb2_menu_item_prm['fields'] as $field){
+			$metas[$field['id']] = isset($_POST[$field['id']])?$_POST[$field['id']]:'';
+		}
+		$rs = wp_update_post( ['ID'=>$menu_item_db_id,'meta_input'=>$metas] );
+	}
+	function nav_menu_item_title( string $title, WP_Post $menu_item, stdClass $args, int $depth ){
+		//if(isset($_GET['d'])) die('<pre>'.print_r(compact('title','menu_item','args','depth'),true));
+		return "Hello";
+		return $title;
+	}
+	/**/
 
 	function after_setup_theme(){//die(__FILE__);
 		$this->init_locale();
@@ -130,8 +177,8 @@ class gz_multilang extends gz_tpl{
 		$lang_dir = WP_CONTENT_DIR."/languages/loco/";
 		$rs = load_theme_textdomain('mafoil',$lang_dir.'themes/');
 		$rs = load_plugin_textdomain('woocommerce',false,$lang_dir.'plugins/');
-		$st[0] = esc_html_e( 'Out of order', 'woocommerce' );
-		if(isset($_GET['d'])) die('<pre>'.print_r($st,true));
+		//$st[0] = esc_html_e( 'Out of order', 'woocommerce' );
+		//if(isset($_GET['d'])) die('<pre>'.print_r($st,true));
 
 		//if(isset($_GET['d'])) die('<pre>'.print_r([true,false,null,$rs],true));
 		//$locale = apply_filters( 'theme_locale', determine_locale(), $this->text_domain );
