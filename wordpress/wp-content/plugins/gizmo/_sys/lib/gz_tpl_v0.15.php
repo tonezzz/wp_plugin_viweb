@@ -63,16 +63,16 @@ class gz_tpl{
 		if(isset($this->config['enqueue_login'])) 	add_action('login_enqueue_scripts',[$this,'init_scripts_login']);
 		if(isset($this->config['post_types'])) 		add_action('init',[$this,'init_post_types']);
 		if(isset($this->config['cmb2'])) 			add_action('cmb2_init',[$this,'init_cmb2']);
-		if(isset($this->config['cmb2v2'])) 			add_action('cmb2_admin_init',[$this,'init_cmb2v2']);
+		if(isset($this->config['cmb2v2'])) 			add_action('cmb2_init',[$this,'init_cmb2v2']);
 		if(isset($this->config['meta_tag'])) 		add_action('wp_head',[$this,'init_meta_tag']);
 		if(isset($this->config['image_sizes']))		add_action('init',[$this,'init_image_sizes']);
 		if(isset($this->config['shortcodes']))		add_action('init',[$this,'init_shortcodes']);
+		if(isset($this->config['taxonomies']))		add_action('init',[$this,'init_taxonomies']);
 		if(isset($this->config['remove_actions']))	add_action('wp_loaded',[$this,'remove_actions']);
 		if(isset($this->config['remove_filters']))	add_action('wp_loaded',[$this,'remove_filters']);
-		if(isset($this->config['actions']))			add_action('init',[$this,'init_actions']);
-		if(isset($this->config['filters']))			add_action('init',[$this,'init_filters']);
-		if(isset($this->config['ajaxes']))			add_action('init',[$this,'init_ajaxes']);
-		if(isset($this->config['taxonomies']))		add_action('init',[$this,'init_taxonomies']);
+		if(isset($this->config['actions']))			$this->init_actions(); //add_action('init',[$this,'init_actions']);
+		if(isset($this->config['filters']))			$this->init_filters(); //add_action('init',[$this,'init_filters']);
+		if(isset($this->config['ajaxes']))			$this->init_ajaxes(); //add_action('init',[$this,'init_ajaxes']);
 	}
 	
 	function init_path(){
