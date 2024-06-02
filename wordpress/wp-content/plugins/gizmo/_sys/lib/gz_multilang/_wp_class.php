@@ -15,12 +15,6 @@ die
 */
 
 global $gz_locale;
-if(is_admin()){
-	//include dirname(__FILE__)."/cmb2-nav-menus/cmb2-nav-menus.php";
-	//include dirname(__FILE__)."/cmb2_nav_menus.php";
-	//include dirname(__FILE__).'/sweet-custom-menu/custom_walker.php';
-	//include dirname(__FILE__).'/sweet-custom-menu/edit_custom_walker.php';
-}
 
 class gz_multilang extends gz_tpl{
 	public $the_content_off=false;
@@ -34,9 +28,9 @@ class gz_multilang extends gz_tpl{
 				//['type'=>'style' ,'load'=>true ,'prm'=>['font-awesome','//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css']],
 				//['type'=>'style' ,'load'=>true ,'prm'=>[__CLASS__,'[REL_PATH]wp_style.scss'],['font-awesome']],
 				['type'=>'script' ,'load'=>true ,'prm'=>[__CLASS__,'[REL_PATH]wp_script.js',['jquery-core']]],
-				['type'=>'localize', 'prm'=>[__CLASS__,__CLASS__,[
+				//['type'=>'localize', 'prm'=>[__CLASS__,__CLASS__,[
 					//'menu_lang'	=> $this->render_menu_lang(),
-				]]]
+				//]]]
 			],
 			'cmb2v2' => [
 				['prm'=> [
@@ -48,8 +42,8 @@ class gz_multilang extends gz_tpl{
 						['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text'],
 						//['id'=>'_post_sub_th' ,'name'=>__('Sub title (Thai)',$this->text_domain) ,'type'=>'textarea_small'],
 						//['id'=>'_post_sub_en' ,'name'=>__('Sub title (English)',$this->text_domain) ,'type'=>'textarea_small'],
-						['id'=>'post_content_en' ,'name'=>__('Post content (English)',$this->text_domain) ,'type'=>'wysiwyg'],
-						['id'=>'post_excerpt_en' ,'name'=>__('Post excerpt (English)',$this->text_domain) ,'type'=>'wysiwyg'],
+						['id'=>'post_content_en' ,'name'=>__('Post content (English)',$this->text_domain) ,'type'=>'wysiwyg','options'=>['wpautop'=>true]],
+						['id'=>'post_excerpt_en' ,'name'=>__('Post excerpt (English)',$this->text_domain) ,'type'=>'wysiwyg','options'=>['wpautop'=>true]],
 					]
 				]],
 				[
@@ -99,8 +93,10 @@ class gz_multilang extends gz_tpl{
 			'remove_actions' => [
 			],
 			'actions' => [
-				['prm'=>['cmb2_admin_init',[$this,'cmb2_admin_init']]],
-				['prm'=>['cmb2_init',[$this,'cmb2_init']]],
+				['prm'=>['after_setup_theme',[$this,'after_setup_theme']]],
+				['prm'=>['cmb2_admin_init',[$this,'nav_cmb2_admin_init']]],
+
+				['prm'=>['quick_edit_custom_box',[$this,'quick_edit_custom_box'], 10, 2]],
 				//['prm'=>['woocommerce_product_additional_information',[$this,'woocommerce_product_additional_information'],21,2]],
 				//['prm'=>['init',[$this,'init_lang'],0]],
 				///['prm'=>['template_redirect',[$this,'template_redirect'],0]],
@@ -116,47 +112,75 @@ class gz_multilang extends gz_tpl{
 		];
 		parent::__construct($config);
 		//add_action('init',[$this,'after_setup_theme'],10,2);
+		//$this->nav_cmb2_admin_init();
+		//$this->nav_cmb2_init();
+	}
+
+	function quick_edit_custom_box($column_name, $post_type){
+		if(isset($_GET['d'])) { print_r(compact('column_name','post_type')); }
 	}
 
 	/**
 	 * Adding language support fields to each menu item.
 	 */
-	function cmb2_admin_init(){
+	function nav_cmb2_admin_init(){
+		//$this->cmb2_menu_items = [];
 		$this->cmb2_menu_item_prm = [
 			'id'					=> 'gz_menu_item',
 			'title' 				=> __('English',$this->text_domain),
 			'object_types'			=> ['nav_menu_item'],
+			'save_fields'           => true,
 			'fields' 				=> [
-				['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text'],
+				['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text' ],
+				//['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text' ,'default_cb'=>[$this,'get_field']],
 			]
 		];
-		$this->cmb2_menu_item = new CMB2($this->cmb2_menu_item_prm);
 		add_action('wp_nav_menu_item_custom_fields',[$this,'wp_nav_menu_item_custom_fields'],10,4);
 		add_action('wp_update_nav_menu_item',[$this,'wp_update_nav_menu_item'],10,3);
 	}
-	function cmb2_init(){
-		add_filter('nav_menu_item_title',[$this,'nav_menu_item_title'],10,4);
+	function get_field($field_array,$field_obj){
+		//if(isset($_GET['d'])) { ob_clean(); die('<pre>'.print_r(compact('field_array','field_obj'),true)); }	
 	}
-	//function wp_nav_menu_item_custom_fields($item_id, $menu_item, $depth, $args, $current_object_id ) {
+	//function nav_cmb2_init(){}
 	function wp_nav_menu_item_custom_fields($item_id, $menu_item, $depth, $args ) {
-		cmb2_print_metabox_form('gz_menu_item');
+		$cmb2_menu_item_prm = $this->cmb2_menu_item_prm;
+		$cmb2_menu_item = new CMB2($cmb2_menu_item_prm,$item_id);
+
+		$field_name = 'post_title_en';
+		$field = $cmb2_menu_item->get_field($field_name);
+		if($value=get_post_meta($item_id,$field_name,true))	$field->args['value'] = $value;
+		//$field->args['_id'] 	= $field_name.'_'.$item_id;
+		//$field->args['_name']	= $field_name.'['.$item_id.']';
+		//$this->cmb2_menu_items[$item_id] = $cmb2_menu_item;
+		cmb2_print_metabox_form($cmb2_menu_item,$item_id);
+		//if(isset($_GET['d'])) { ob_clean(); die('<pre>'.print_r(compact('item_id','menu_item','depth','args','field_name','value'),true)); }
 	}
-	function wp_update_nav_menu_item($menu_id, $menu_item_db_id, $menu_item_args) { //return;
+	function wp_update_nav_menu_item($menu_id, $menu_item_db_id, $menu_item_args) { //die(__FILE__);
+		//if(1 || isset($_POST['edit-menu-item']) && ($_POST['edit-menu-item']==43635) ) { ob_clean(); die('<pre>'.print_r($_POST,true).print_r(compact('menu_id','menu_item_db_id','menu_item_args'),true)); }
+		//ob_clean(); die('<pre>'.print_r($_POST['post_title_en'],true));
+
 		if (defined('DOING_AJAX') && DOING_AJAX) return;
 
-		if (!isset($_GET['edit-menu-item'])) return;
+		//if (!isset($_GET['edit-menu-item'])) return;
 		check_admin_referer('update-nav_menu', 'update-nav-menu-nonce');
-		$metas = [];
-		foreach($this->cmb2_menu_item_prm['fields'] as $field){
-			$metas[$field['id']] = isset($_POST[$field['id']])?$_POST[$field['id']]:'';
+		if(is_array($data=$_POST['post_title_en'])) foreach($data as $id=>$value){
+			//{ ob_clean(); die('<pre>'.print_r($id,true)); }
+			//update_post_meta($id,'post_title_en',$value);
 		}
-		$rs = wp_update_post( ['ID'=>$menu_item_db_id,'meta_input'=>$metas] );
+
+		//if(foreach($this->cmb2_menu_item_prm['fields'] as $field){
+		//	$metas[$field['id']] = isset($_POST[$field['id']])?$_POST[$field['id']]:'';
+		//}
+		//$rs = wp_update_post( ['ID'=>$menu_item_db_id,'meta_input'=>$metas] );
 	}
-	function nav_menu_item_title( string $title, WP_Post $menu_item, stdClass $args, int $depth ){
-		if(isset($_GET['d'])) die('<pre>'.print_r(compact('title','menu_item','args','depth'),true));
+	/*
+	function wp_nav_menu_items( string $items, stdClass $args ){
+		//if(is_admin()) return $title;
+		//if(isset($_GET['d'])) { ob_clean(); die('<pre>'.print_r(compact('items','args'),true)); }
 		return "Hello";
 		return $title;
 	}
+	*/
 	/**/
 
 	function after_setup_theme(){//die(__FILE__);
@@ -200,16 +224,26 @@ class gz_multilang extends gz_tpl{
 	* If there's meta _post_title_en then return it, otherwise return the original title;
 	* https://developer.wordpress.org/reference/functions/get_the_title/
 	*/
-	function the_title($title,$post=false){ //if(isset($_GET['d'])) die($this->get_current_lang());
-		if (empty($this->get_suffix())) return $title;
+	function the_title($title,$post=false){
+		//if(isset($post) && $post==43635) die('<pre>'.print_r(compact('title','post'),true).'</pre>');
+		//if(isset($post) && $post==43635) die($this->get_suffix());
+		if (empty($this->get_suffix($debug=true))) return $title;
 		$title = $this->get_field_lang($post,'post_title',$this->get_current_lang(),$title); //die($excerpt);
+		//if(isset($post) && $post==43635) die('<pre>'.print_r(compact('title','post'),true).'</pre>');
 		return $title;
 	}
 	
+	function get_suffix($debug=false){
+		//if($debug || isset($_GET['d'])) die('<br>'.print_r($_COOKIE['gz_lang'],true));
+		if($_COOKIE['gz_lang']=='th') $suffix = '';
+		else $suffix = '_'.$_COOKIE['gz_lang'];
+		return $suffix;
+	}
+
 	function the_content($content,$post=false){ //if(isset($_GET['d'])) die(__FILE__);
 		if (empty($this->get_suffix())) return $content;
 		$content = $this->get_field_lang($post,'post_content',$this->get_current_lang(),$content); //die($excerpt);
-		return $content;
+		return wpautop($content);
 	}
 
 	/*
@@ -252,7 +286,7 @@ class gz_multilang extends gz_tpl{
 		*/
 	}
 
-	function get_field_lang($post,$fn,$lang,$default=''){ //if(isset($_GET['d'])) die($fn);
+	function get_field_lang($post,$fn,$lang=false,$default=''){ //if(isset($_GET['d'])) die($fn);
 		if(false===$post) global $post;
 		if(is_integer($post)) $post_id = $post; else $post_id = $post->ID; //Get the post_id
 		if(is_admin() && !wp_doing_ajax()) $data = get_post_meta($post_id,$fn,true);
@@ -386,13 +420,6 @@ class gz_multilang extends gz_tpl{
 		elseif (isset($_COOKIE['gz_lang'])) $lang = $_COOKIE['gz_lang'];
 		else $lang = "th";
 		return $lang;
-	}
-
-	function get_suffix(){
-		if($_COOKIE['gz_lang']=='th') $suffix = '';
-		else $suffix = '_'.$_COOKIE['gz_lang'];
-		//if(isset($_GET['d'])) die('<br>'.print_r(compact('suffix'),true));
-		return $suffix;
 	}
 	function theme_locale($locale=false,$domain=false){
 		$locale = isset($_COOKIE['gz_locale'])?$_COOKIE['gz_locale']:'th_TH';
