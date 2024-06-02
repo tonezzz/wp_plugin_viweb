@@ -1,11 +1,14 @@
 (function($){
 	$('document').ready(function(){
-		//init_menu_lang();
+		init_menu_lang();
 		//init_tinymce_block();
 	});
 
 	function init_menu_lang(){
-		$('.gz_menu_lang_switcher').html(gz_multilang.menu_lang);
+		var lang = $.cookie('gz_lang'); //alert(lang);
+		$('.fl').css({opacity: .5});
+		$('.fl.'+lang).css({opacity: 1});
+		//$('.gz_menu_lang_switcher').html(gz_multilang.menu_lang);
 	}
 
 	function init_tinymce_block(){
