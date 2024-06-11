@@ -7,6 +7,24 @@
 			$header_style = mafoil_get_config('header_style', ''); 
 			$header_style  = (get_post_meta( $mafoil_page_id, 'page_header_style', true )) ? get_post_meta($mafoil_page_id, 'page_header_style', true ) : $header_style ;
 		?>
+		<?php
+			//if(isset($_GET['d'])) { die('<pre>'.print_r(compact('footer_style','header_style'),true)); }
+			if($footer_slug = get_post_field( 'post_name', $footer_style )){
+				$footer_slug_lang = $footer_slug.'_'.$_COOKIE['gz_lang'];
+				$site_url = site_url($footer_slug_lang);
+				//if($footer_slug_id = url_to_postid( site_url($footer_slug_lang)) ) $footer_style = $footer_slug_id;
+				//bwp_footer
+				$args = [
+					'post_type'      => 'bwp_footer',
+					'posts_per_page' => 1,
+					'post_name__in'  => [$footer_slug_lang],
+					'fields'         => 'ids' 
+				];
+				$q = get_posts( $args );
+				if(isset($q[0])) $footer_style=$q[0];
+				//if(isset($_GET['d'])) { die('<pre>'.print_r(compact('header_style','footer_style','footer_slug','q','footer_slug_lang','site_url'),true)); }
+			}
+		?>
 		<?php if($footer_style && (get_post($footer_style)) && in_array( 'elementor/elementor.php', apply_filters('active_plugins', get_option( 'active_plugins' )))){ ?>
 			<?php $elementor_instance = Elementor\Plugin::instance(); ?>
 			<footer id="bwp-footer" class="bwp-footer <?php echo esc_attr( get_post($footer_style)->post_name ); ?><?php if(!get_theme_mod('header_moble_bottom', true)){ ?>no-padding<?php } ?>">
