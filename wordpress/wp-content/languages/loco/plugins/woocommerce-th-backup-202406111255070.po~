@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2024-06-11 12:55+0000\n"
+"PO-Revision-Date: 2024-06-11 11:47+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,11 +10,7 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "Language: th\n"
 "Project-Id-Version: Plugins - WooCommerce - Stable (latest release)\n"
-"Language-Team: ไทย\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-11 12:46+0000\n"
-"Last-Translator: \n"
-"X-Loco-Version: 2.6.10; wp-6.5.4"
+"Language-Team: ไทย"
 
 #. translators: no need to translate it. It's a link.
 #: src/Admin/Features/LaunchYourStore.php:144
@@ -23997,7 +23993,7 @@ msgstr "รายการสั่งซื้อไม่ถูกต้อง
 
 #: src/StoreApi/Utilities/OrderController.php:583
 msgid "Invalid order ID or key provided."
-msgstr "รหัสใบสั่งซื้อหรือคีย์ไม่ถูกต้อง"
+msgstr ""
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:186
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:226
