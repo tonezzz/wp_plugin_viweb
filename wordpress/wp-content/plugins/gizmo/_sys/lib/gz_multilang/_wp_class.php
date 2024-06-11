@@ -69,7 +69,7 @@ class gz_multilang extends gz_tpl{
 			'filters' => [
 
 				['prm'=>['the_title',[$this,'the_title'],10,2]],
-				['prm'=>['the_content',[$this,'the_content'],10,2]],
+				['prm'=>['the_content',[$this,'the_content'],20,2]],
 				//['prm'=>['get_the_excerpt',[$this,'get_the_excerpt'],21,2]],
 				['prm'=>['woocommerce_short_description',[$this,'get_the_excerpt'],21,2]],
 				['prm'=>['get_term',[$this,'get_term'],10,2]],
@@ -91,16 +91,21 @@ class gz_multilang extends gz_tpl{
 				//['prm'=>['woocommerce_before_main_content',[$this,'woocommerce_breadcrumb'],20]],
 			],
 			'remove_actions' => [
+				['prm'=>['wp_footer',[$this,'wp_footer'],20]],
+				//['prm'=>['wpautop','wpautop']],
 			],
 			'actions' => [
 				['prm'=>['after_setup_theme',[$this,'after_setup_theme']]],
 				['prm'=>['cmb2_admin_init',[$this,'nav_cmb2_admin_init']]],
 
+				//['prm'=>['get_footer',[$this,'get_footer']]],
 				['prm'=>['quick_edit_custom_box',[$this,'quick_edit_custom_box'], 10, 2]],
+				['prm'=>['init',[$this,'load_translations']]],
+				['prm'=>['admin_menu',[$this,'admin_menu']]],
+
 				//['prm'=>['woocommerce_product_additional_information',[$this,'woocommerce_product_additional_information'],21,2]],
 				//['prm'=>['init',[$this,'init_lang'],0]],
 				///['prm'=>['template_redirect',[$this,'template_redirect'],0]],
-				//['prm'=>['after_setup_theme',[$this,'load_translations']]],
 				//['prm'=>['admin_init',[$this,'ajax_pre_process'],10,2]],
 				//['prm'=>['storefront_page',[$this,'storefront_page_content'],20]],
 				//['prm'=>['woocommerce_shop_loop_item_title',[$this,'woocommerce_shop_loop_item_title'],10]],
@@ -116,8 +121,51 @@ class gz_multilang extends gz_tpl{
 		//$this->nav_cmb2_init();
 	}
 
+	function admin_menu() { 
+		add_options_page(
+			'GZ multilang',            // admin page title
+			'GZ multilang',            // menu item name
+			'manage_options',               // access privilege
+			basename(__FILE__),                         // page slug for the option page
+			[$this,'gz_multilang_panel']  // call-back function name
+		);
+	}
+	function gz_multilang_panel(){
+		$arr = [
+			['Hi there!','localizationsample'],
+			['Hello world!','localizationsample'],
+			['Name','localizationsample'],
+			['Name','woocommerce'],
+			['Hot','woocommerce'],
+			['Name','contact-form-7'],
+			['Address','contact-form-7'],
+		];
+		$path = WP_CONTENT_DIR."/languages/loco/";
+		//$loaded = load_textdomain('contact-form-7',$path.'plugins/contact-form-7-th.mo');
+		//$loaded = load_textdomain('localizationsample',$path.'plugins/localizationsample-th.mo');
+		echo '<div class="wrap"><div id="icon-themes" class="icon32"></div>';
+		echo '<h2>' . __('Hi there!', 'localizationsample') . '</h2>'; 
+		echo '<p>';
+		echo '<table>';
+		foreach($arr as $item){
+			$t = $item[0];
+			$d = $item[1];
+			echo "<tr><td>{$d}</td><td>{$t}</td><td>"; _e($t,$d); echo '</td></tr>';
+			//echo "<tr><td>{$d}</td><td>{$t}</td><td>"; echo __($t,$d); echo "</td></tr>";
+		}
+		echo '</table>';
+		echo __('Hot', 'woocommerce'); 
+		echo '</p>';
+		echo '</div>'; // end of wrap
+	}
+	
+	function wp_footer( string $name=null, array $args=[] ) { //die(__FILE__);
+		//if(isset($_GET['d'])) { die('<pre>'.print_r(compact('name','args'),true).'</pre>'); }
+		return false;
+	}
+
 	function quick_edit_custom_box($column_name, $post_type){
-		if(isset($_GET['d'])) { print_r(compact('column_name','post_type')); }
+		//if(isset($_GET['d'])) { print_r(compact('column_name','post_type')); }
 	}
 
 	/**
@@ -167,11 +215,6 @@ class gz_multilang extends gz_tpl{
 			//{ ob_clean(); die('<pre>'.print_r($id,true)); }
 			//update_post_meta($id,'post_title_en',$value);
 		}
-
-		//if(foreach($this->cmb2_menu_item_prm['fields'] as $field){
-		//	$metas[$field['id']] = isset($_POST[$field['id']])?$_POST[$field['id']]:'';
-		//}
-		//$rs = wp_update_post( ['ID'=>$menu_item_db_id,'meta_input'=>$metas] );
 	}
 	/*
 	function wp_nav_menu_items( string $items, stdClass $args ){
@@ -199,25 +242,18 @@ class gz_multilang extends gz_tpl{
 	 * load_child_theme_textdomain($this->text_domain,get_stylesheet_directory().'/languages');
 	 */
 	function load_translations($force=false){
-		if(is_admin()) return;
-		$lang_dir = WP_CONTENT_DIR."/languages/loco/";
-		$rs = load_theme_textdomain('mafoil',$lang_dir.'themes/');
-		$rs = load_plugin_textdomain('woocommerce',false,$lang_dir.'plugins/');
-		//$st[0] = esc_html_e( 'Out of order', 'woocommerce' );
-		//if(isset($_GET['d'])) die('<pre>'.print_r($st,true));
-
-		//if(isset($_GET['d'])) die('<pre>'.print_r([true,false,null,$rs],true));
-		//$locale = apply_filters( 'theme_locale', determine_locale(), $this->text_domain );
-		//if(isset($_GET['d'])) die($locale);
-		//if(isset($_GET['d'])) die(determine_locale());
-		//$lang_dir = WP_CONTENT_DIR."/languages/loco/themes/";
-		//if(isset($_GET['d'])) die($this->text_domain."   ".$lang_dir);
-		//if(isset($_GET['d'])) die($this->is_load_theme_textdomain);
-		//if($force || !$this->is_load_theme_textdomain){
-		//	update_option('template',$this->text_domain);
-		//	$rs = load_theme_textdomain($this->text_domain,$lang_dir);
-			//if(isset($_GET['d'])) die('<pre>'.print_r($rs,true));
-		//}
+		//if(is_admin()) return;
+		$path = WP_CONTENT_DIR."/languages/loco/";
+		//$rs = load_theme_textdomain('mafoil',$lang_dir.'themes/');
+		//$rs = load_plugin_textdomain('contact-form-7',false,$lang_dir.'plugins/');
+		//$rs = load_plugin_textdomain('woocommerce',false,$lang_dir.'plugins/');
+		if($this->get_current_lang()!='en'){
+			$lang = $this->get_current_lang();
+			$loaded = load_textdomain('mafoil',$path."themes/mafoil-{$lang}.mo");
+			$loaded = load_textdomain('woocommerce',$path."plugins/woocommerce-{$lang}.mo");
+			$loaded = load_textdomain('contact-form-7',$path."plugins/contact-form-7-{$lang}.mo");
+			$loaded = load_textdomain('localizationsample',$path."plugins/localizationsample-{$lang}.mo");
+		}
 	}
 
 	/*
@@ -240,10 +276,56 @@ class gz_multilang extends gz_tpl{
 		return $suffix;
 	}
 
+	/**
+	 * Elementor = no wpautop
+	 * Otherwise = wpautop
+	 */
 	function the_content($content,$post=false){ //if(isset($_GET['d'])) die(__FILE__);
-		if (empty($this->get_suffix())) return $content;
-		$content = $this->get_field_lang($post,'post_content',$this->get_current_lang(),$content); //die($excerpt);
-		return wpautop($content);
+		if(is_admin() && !wp_doing_ajax()) return $content;
+
+		if(empty($post)) global $post;
+		$autop = true;
+		if ($pp=$this->get_post_lang($post,$this->get_current_lang())){
+			if($this->is_elementor($pp->ID)){
+				$autop = false;
+				$content = Elementor\Plugin::instance()->frontend->get_builder_content($pp->ID);
+			} else $content = get_the_content(null,false,$pp);
+			//if(isset($_GET['d'])) { ob_clean(); die('<pre>'.print_r(compact('content','pp'),true)); }
+		} else {
+			if (empty($this->get_suffix())) return $content; //Default lang = default content.
+			$content = $this->get_field_lang($post,'post_content',$this->get_current_lang(),$content);
+		}
+		
+		//$content = do_shortcode($content);
+		if($autop) $content = wpautop($content);
+		return $content;
+		//return wpautop($content);
+	}
+
+	function is_elementor($post){
+		if(is_object($post)) $post_id = $post->ID; else $post_id = $post;
+		return get_post_meta($post_id,'_elementor_template_type',true); //Check if meta exists.
+	}
+
+	/**
+	 * function get_post_lang($post,$lang): Get post according to language (using prefixed)
+	 * 
+	 */
+	function get_post_lang($post,$lang){
+		if(empty($post)) global $post;
+		$post_type=get_post_type($post);
+		$slug = get_post_field( 'post_name', $post ); $slug = str_replace(['_en','_th'],'',$slug); //Clean up language suffix.
+		$slug_lang = $slug.'_'.$_COOKIE['gz_lang'];
+		//if('page'===$post_type && isset($_GET['d'])) { ob_clean(); die('<pre>'.print_r(compact('post_type','lang','slug','slug_lang','post'),true)); }
+		$args = [
+			'post_type'      => 'any',
+			'posts_per_page' => 1,
+			'post_name__in'  => [$slug_lang],
+			//'fields'         => 'ids' 
+		];
+		$q = get_posts( $args );
+		//if('page'===$post_type && isset($_GET['d'])) { ob_clean(); die('<pre>'.print_r(compact('post_type','lang','slug','slug_lang','q'),true)); }
+		return isset($q[0])?$q[0]:false;
 	}
 
 	/*
@@ -291,7 +373,8 @@ class gz_multilang extends gz_tpl{
 		if(is_integer($post)) $post_id = $post; else $post_id = $post->ID; //Get the post_id
 		if(is_admin() && !wp_doing_ajax()) $data = get_post_meta($post_id,$fn,true);
 		//global $post;
-		if($val=get_post_meta($post_id,$fn.'_'.$lang,true)) $data = $val;
+		if(!empty($lang)) $lang_suffix = '_'.$lang; else $lang_suffix = '';
+		if($val=get_post_meta($post_id,$fn.$lang_suffix,true)) $data = $val;
 
 		if(empty($data)) return $default;
 
