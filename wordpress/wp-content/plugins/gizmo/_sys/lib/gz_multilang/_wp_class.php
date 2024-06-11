@@ -67,7 +67,6 @@ class gz_multilang extends gz_tpl{
 				//['prm'=>['woocommerce_before_main_content','woocommerce_breadcrumb',20]],
 			],
 			'filters' => [
-
 				['prm'=>['the_title',[$this,'the_title'],10,2]],
 				['prm'=>['the_content',[$this,'the_content'],20,2]],
 				//['prm'=>['get_the_excerpt',[$this,'get_the_excerpt'],21,2]],
@@ -136,15 +135,17 @@ class gz_multilang extends gz_tpl{
 			['Hello world!','localizationsample'],
 			['Name','localizationsample'],
 			['Name','woocommerce'],
-			['Hot','woocommerce'],
+			['HOT','woocommerce'],
+			['Hot','mafoil'],
+			['SHOP NOW','woocommerce'],
+			['Order ID','woocommerce'],
+			['CHECKOUT','woocommerce'],
 			['Name','contact-form-7'],
 			['Address','contact-form-7'],
 		];
 		$path = WP_CONTENT_DIR."/languages/loco/";
-		//$loaded = load_textdomain('contact-form-7',$path.'plugins/contact-form-7-th.mo');
-		//$loaded = load_textdomain('localizationsample',$path.'plugins/localizationsample-th.mo');
 		echo '<div class="wrap"><div id="icon-themes" class="icon32"></div>';
-		echo '<h2>' . __('Hi there!', 'localizationsample') . '</h2>'; 
+		echo '<h2>' . __('GZ Multilang control panel', 'gizmo') . '</h2>'; 
 		echo '<p>';
 		echo '<table>';
 		foreach($arr as $item){
@@ -154,7 +155,6 @@ class gz_multilang extends gz_tpl{
 			//echo "<tr><td>{$d}</td><td>{$t}</td><td>"; echo __($t,$d); echo "</td></tr>";
 		}
 		echo '</table>';
-		echo __('Hot', 'woocommerce'); 
 		echo '</p>';
 		echo '</div>'; // end of wrap
 	}
@@ -340,7 +340,8 @@ class gz_multilang extends gz_tpl{
 		return $excerpt;
 	}
 
-	function get_term($term, $taxonomy){ //if(isset($_GET['d'])) return "xxx";
+	function get_term($term, $taxonomy){
+		if('product_cat'!==$taxonomy) return $term; //if(isset($_GET['d'])) die('<pre>'.print_r(compact('term','taxonomy'),true));
 		if (empty($this->get_suffix())) return $term;
 		$term->name = $this->get_term_meta($term,'name',$this->get_current_lang());
 		$term->description = $this->get_term_meta($term,'description',$this->get_current_lang());
@@ -350,7 +351,7 @@ class gz_multilang extends gz_tpl{
 
 	function get_term_meta($term,$key,$single=false,$lang=false,$default=false){
 		if ($val = get_term_meta($term->id,$key.$this->get_suffix(),$single)) return $val;
-		return $term->key;
+		else return $term->$key;
 		//if(isset($_GET['d'])) die('<pre>'.print_r(compact('term','val'),true));
 		//return $term->key;
 		//if(term-)
