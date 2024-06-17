@@ -34,6 +34,14 @@ class gz_multilang extends gz_tpl{
 			],
 			'cmb2v2' => [
 				['prm'=> [
+					'id'					=> 'qen',
+					'title' 				=> __('English',$this->text_domain),
+					'object_types'			=> ['post','page','product','nav_menu_item'],
+					'fields' 				=> [
+						['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text'],
+					]
+				]],
+				['prm'=> [
 					'id'					=> 'en',
 					'title' 				=> __('English',$this->text_domain),
 					'object_types'			=> ['post','page','product','nav_menu_item'],
@@ -164,8 +172,12 @@ class gz_multilang extends gz_tpl{
 		return false;
 	}
 
-	function quick_edit_custom_box($column_name, $post_type){
-		//if(isset($_GET['d'])) { print_r(compact('column_name','post_type')); }
+	function quick_edit_custom_box($column_name, $post_type){ return;
+		$html = "";
+		$html.= "<div>";
+		if(isset($_GET['d'])) $html.= '<pre>'.print_r(compact('column_name','post_type'),true).'</pre>';
+		$html.= "</div>";
+		echo $html;
 	}
 
 	/**
@@ -242,6 +254,7 @@ class gz_multilang extends gz_tpl{
 	 * load_child_theme_textdomain($this->text_domain,get_stylesheet_directory().'/languages');
 	 */
 	function load_translations($force=false){
+		if(is_admin() && !wp_doing_ajax()) return;
 		//if(is_admin()) return;
 		$path = WP_CONTENT_DIR."/languages/loco/";
 		//$rs = load_theme_textdomain('mafoil',$lang_dir.'themes/');
@@ -252,7 +265,7 @@ class gz_multilang extends gz_tpl{
 			$loaded = load_textdomain('mafoil',$path."themes/mafoil-{$lang}.mo");
 			$loaded = load_textdomain('woocommerce',$path."plugins/woocommerce-{$lang}.mo");
 			$loaded = load_textdomain('contact-form-7',$path."plugins/contact-form-7-{$lang}.mo");
-			$loaded = load_textdomain('localizationsample',$path."plugins/localizationsample-{$lang}.mo");
+			//$loaded = load_textdomain('localizationsample',$path."plugins/localizationsample-{$lang}.mo");
 		}
 	}
 
@@ -349,24 +362,12 @@ class gz_multilang extends gz_tpl{
 		return $term;
 	}
 
+	/**
+	 * get_term_meta() - Get termmeta according to $lang (or default.)
+	 */
 	function get_term_meta($term,$key,$single=false,$lang=false,$default=false){
 		if ($val = get_term_meta($term->id,$key.$this->get_suffix(),$single)) return $val;
 		else return $term->$key;
-		//if(isset($_GET['d'])) die('<pre>'.print_r(compact('term','val'),true));
-		//return $term->key;
-		//if(term-)
-		/*
-		if(false===$post) global $post;
-		if(is_integer($post)) $post_id = $post; else $post_id = $post->ID; //Get the post_id
-		if(is_admin() && !wp_doing_ajax()) $data = get_post_meta($post_id,$fn,true);
-		//global $post;
-		if($val=get_post_meta($post_id,$fn.'_'.$lang,true)) $data = $val;
-
-		if(empty($data)) return $default;
-
-		//if(isset($_GET['d'])) die(print_r($data,true));
-		return $data;
-		*/
 	}
 
 	function get_field_lang($post,$fn,$lang=false,$default=''){ //if(isset($_GET['d'])) die($fn);
@@ -466,6 +467,8 @@ class gz_multilang extends gz_tpl{
 	 * 2. Use loale from user_lang_pref if login.
 	*/
 	function init_locale(){
+		if(is_admin() && !wp_doing_ajax()) return;
+
 		if(isset($_GET['lang'])){ //"lang=th or lang=en"
 			$lang = $_GET['lang'];
 			//if($user_id=get_current_user_id()) update_user_option($user_id,'user_lang_pref',$locale);
