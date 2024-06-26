@@ -1,0 +1,10 @@
+.elementor-widget-video,
+.elementor-widget-video .elementor-widget-container,
+.elementor-widget-video .elementor-widget-container .elementor-wrapper,
+.elementor-widget-video .elementor-widget-container .elementor-wrapper .elementor-custom-embed-image-overlay
+{ height: 100%; cursor: pointer; }
+
+.elementor-custom-embed-image-overlay {min-height: 240px;}
+
+/*.elementor-column {height: 435px;}*/
+/* Fix video thumnail doesn't display on en page. */

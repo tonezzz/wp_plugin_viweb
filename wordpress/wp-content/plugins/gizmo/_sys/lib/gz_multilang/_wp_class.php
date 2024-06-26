@@ -26,7 +26,7 @@ class gz_multilang extends gz_tpl{
 		$config = [
 			'enqueue'  => [
 				//['type'=>'style' ,'load'=>true ,'prm'=>['font-awesome','//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css']],
-				//['type'=>'style' ,'load'=>true ,'prm'=>[__CLASS__,'[REL_PATH]wp_style.scss'],['font-awesome']],
+				['type'=>'style' ,'load'=>true ,'prm'=>[__CLASS__,'[REL_PATH]wp_style.css']],
 				['type'=>'script' ,'load'=>true ,'prm'=>[__CLASS__,'[REL_PATH]wp_script.js',['jquery-core']]],
 				//['type'=>'localize', 'prm'=>[__CLASS__,__CLASS__,[
 					//'menu_lang'	=> $this->render_menu_lang(),
@@ -294,7 +294,7 @@ class gz_multilang extends gz_tpl{
 	 * Otherwise = wpautop
 	 */
 	function the_content($content,$post=false){ //if(isset($_GET['d'])) die(__FILE__);
-		if(is_admin() && !wp_doing_ajax()) return $content;
+		if(is_admin() || wp_doing_ajax()) return $content;
 
 		if(empty($post)) global $post;
 		$autop = true;
