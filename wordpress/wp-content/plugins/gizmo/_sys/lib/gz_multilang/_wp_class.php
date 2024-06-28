@@ -1,4 +1,4 @@
-<?php //die(__FILE__);
+<?php //die(dirname(__FILE__));
 /*
 * gz_facebook() class.
 *	- Render page badge in iFrame.
@@ -15,6 +15,9 @@ die
 */
 
 global $gz_locale;
+
+require dirname(__FILE__)."/_gz_menu_ml.php";
+require dirname(__FILE__)."/_gz_quickedit_taxonomy_ml.php";
 
 class gz_multilang extends gz_tpl{
 	public $the_content_off=false;
@@ -59,7 +62,7 @@ class gz_multilang extends gz_tpl{
 						'id'					=> 'gz_term',
 						'title' 				=> __('English',$this->text_domain),
 						'object_types'			=> ['term'],
-						'taxonomies'       		=> [ 'category', 'post_tag', 'product_cat' ],
+						'taxonomies'       		=> [ 'category', 'post_tag', 'product_cat', 'product_tag' ],
 						'fields' 				=> [
 							['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text'],
 						]
@@ -79,7 +82,8 @@ class gz_multilang extends gz_tpl{
 				['prm'=>['the_content',[$this,'the_content'],20,2]],
 				//['prm'=>['get_the_excerpt',[$this,'get_the_excerpt'],21,2]],
 				['prm'=>['woocommerce_short_description',[$this,'get_the_excerpt'],21,2]],
-				['prm'=>['get_term',[$this,'get_term'],10,2]],
+				['prm'=>['get_term',[$this,'get_term_ml'],10,2]],
+				['prm'=>['get_taxonomy',[$this,'get_taxonomy_ml'],10,2]],
 				['prm'=>['locale',[$this,'get_locale']],10,1],
 				//['prm'=>['theme_locale',[$this,'theme_locale'],10,2]],
 				//['prm'=>['determine_locale',[$this,'determine_locale']]],
@@ -103,11 +107,10 @@ class gz_multilang extends gz_tpl{
 			],
 			'actions' => [
 				['prm'=>['after_setup_theme',[$this,'after_setup_theme']]],
-				['prm'=>['cmb2_admin_init',[$this,'nav_cmb2_admin_init']]],
 
 				//['prm'=>['get_footer',[$this,'get_footer']]],
-				['prm'=>['quick_edit_custom_box',[$this,'quick_edit_custom_box'], 10, 2]],
 				['prm'=>['init',[$this,'load_translations']]],
+				['prm'=>['init',[$this,'init_modules']]],
 				['prm'=>['admin_menu',[$this,'admin_menu']]],
 
 				//['prm'=>['woocommerce_product_additional_information',[$this,'woocommerce_product_additional_information'],21,2]],
@@ -126,6 +129,11 @@ class gz_multilang extends gz_tpl{
 		//add_action('init',[$this,'after_setup_theme'],10,2);
 		//$this->nav_cmb2_admin_init();
 		//$this->nav_cmb2_init();
+	}
+
+	function init_modules(){
+		$this->gz_menu_ml = new gz_menu_ml();
+		$this->gz_quickedit_taxonomy_ml = new gz_quickedit_taxonomy_ml();
 	}
 
 	function admin_menu() { 
@@ -168,75 +176,8 @@ class gz_multilang extends gz_tpl{
 	}
 	
 	function wp_footer( string $name=null, array $args=[] ) { //die(__FILE__);
-		//if(isset($_GET['d'])) { die('<pre>'.print_r(compact('name','args'),true).'</pre>'); }
 		return false;
 	}
-
-	function quick_edit_custom_box($column_name, $post_type){ return;
-		$html = "";
-		$html.= "<div>";
-		if(isset($_GET['d'])) $html.= '<pre>'.print_r(compact('column_name','post_type'),true).'</pre>';
-		$html.= "</div>";
-		echo $html;
-	}
-
-	/**
-	 * Adding language support fields to each menu item.
-	 */
-	function nav_cmb2_admin_init(){
-		//$this->cmb2_menu_items = [];
-		$this->cmb2_menu_item_prm = [
-			'id'					=> 'gz_menu_item',
-			'title' 				=> __('English',$this->text_domain),
-			'object_types'			=> ['nav_menu_item'],
-			'save_fields'           => true,
-			'fields' 				=> [
-				['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text' ],
-				//['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text' ,'default_cb'=>[$this,'get_field']],
-			]
-		];
-		add_action('wp_nav_menu_item_custom_fields',[$this,'wp_nav_menu_item_custom_fields'],10,4);
-		add_action('wp_update_nav_menu_item',[$this,'wp_update_nav_menu_item'],10,3);
-	}
-	function get_field($field_array,$field_obj){
-		//if(isset($_GET['d'])) { ob_clean(); die('<pre>'.print_r(compact('field_array','field_obj'),true)); }	
-	}
-	//function nav_cmb2_init(){}
-	function wp_nav_menu_item_custom_fields($item_id, $menu_item, $depth, $args ) {
-		$cmb2_menu_item_prm = $this->cmb2_menu_item_prm;
-		$cmb2_menu_item = new CMB2($cmb2_menu_item_prm,$item_id);
-
-		$field_name = 'post_title_en';
-		$field = $cmb2_menu_item->get_field($field_name);
-		if($value=get_post_meta($item_id,$field_name,true))	$field->args['value'] = $value;
-		//$field->args['_id'] 	= $field_name.'_'.$item_id;
-		//$field->args['_name']	= $field_name.'['.$item_id.']';
-		//$this->cmb2_menu_items[$item_id] = $cmb2_menu_item;
-		cmb2_print_metabox_form($cmb2_menu_item,$item_id);
-		//if(isset($_GET['d'])) { ob_clean(); die('<pre>'.print_r(compact('item_id','menu_item','depth','args','field_name','value'),true)); }
-	}
-	function wp_update_nav_menu_item($menu_id, $menu_item_db_id, $menu_item_args) { //die(__FILE__);
-		//if(1 || isset($_POST['edit-menu-item']) && ($_POST['edit-menu-item']==43635) ) { ob_clean(); die('<pre>'.print_r($_POST,true).print_r(compact('menu_id','menu_item_db_id','menu_item_args'),true)); }
-		//ob_clean(); die('<pre>'.print_r($_POST['post_title_en'],true));
-
-		if (defined('DOING_AJAX') && DOING_AJAX) return;
-
-		//if (!isset($_GET['edit-menu-item'])) return;
-		check_admin_referer('update-nav_menu', 'update-nav-menu-nonce');
-		if(is_array($data=$_POST['post_title_en'])) foreach($data as $id=>$value){
-			//{ ob_clean(); die('<pre>'.print_r($id,true)); }
-			//update_post_meta($id,'post_title_en',$value);
-		}
-	}
-	/*
-	function wp_nav_menu_items( string $items, stdClass $args ){
-		//if(is_admin()) return $title;
-		//if(isset($_GET['d'])) { ob_clean(); die('<pre>'.print_r(compact('items','args'),true)); }
-		return "Hello";
-		return $title;
-	}
-	*/
-	/**/
 
 	function after_setup_theme(){//die(__FILE__);
 		$this->init_locale();
@@ -353,8 +294,15 @@ class gz_multilang extends gz_tpl{
 		return $excerpt;
 	}
 
-	function get_term($term, $taxonomy){
-		if('product_cat'!==$taxonomy) return $term; //if(isset($_GET['d'])) die('<pre>'.print_r(compact('term','taxonomy'),true));
+	function get_taxonomy_ml($_term, $taxonomy){
+		if(is_admin() && !wp_doing_ajax()) return $_term;
+		if(isset($_GET['d'])) { die('<pre>'.print_r(compact('_term','taxonomy'),true).'</pre>'); }
+		return $_term;
+	}
+
+	function get_term_ml($term, $taxonomy){
+		$term_list = ['product_cat','product_tag'];
+		if(in_array($taxonomy,$term_list)) return $term; //if(isset($_GET['d'])) die('<pre>'.print_r(compact('term','taxonomy'),true));
 		if (empty($this->get_suffix())) return $term;
 		$term->name = $this->get_term_meta($term,'name',$this->get_current_lang());
 		$term->description = $this->get_term_meta($term,'description',$this->get_current_lang());
