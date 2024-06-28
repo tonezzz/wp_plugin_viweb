@@ -20,7 +20,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./wordpress:/usr/local/apache2/htdocs
+      - ./src/wp:/usr/local/apache2/htdocs
+      - ./src/plugins/gizmo:/usr/local/apache2/htdocs/wp-content/plugins/gizmo
       - ./dockers/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
       - ./dockers/apache/httpd-ssl.conf/usr/local/apache2/conf/extra/httpd-ssl.conf
       - ./dockers/apache/sites-enabled:/etc/apache2/sites-enabled
@@ -45,7 +46,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./wordpress:/usr/local/apache2/htdocs
+      - ./src/wp:/usr/local/apache2/htdocs
+      - ./src/plugins/gizmo:/usr/local/apache2/htdocs/wp-content/plugins/gizmo
       - ./persistent-data/uploads:/usr/local/apache2/htdocs/wp-content/uploads
       - ./php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     environment:
