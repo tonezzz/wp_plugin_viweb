@@ -1,0 +1,63 @@
+/* Revolution Slider ---------------------------------------------------------*/
+.elementor-widget-slider_revolution{
+	.next-slider{
+		@media(max-width: 1655px){
+			.tp-leftarrow{
+				@include transform(translate(30px, -25px) !important);
+			}
+			.tp-rightarrow{
+				@include transform(translate(-30px, -25px) !important);
+				right: 0 !important;
+				left: auto !important;
+			}
+		}
+		.tparrows{
+			@include opacity-h();
+			@include transition(all .2s ease);
+		}
+		&:hover{
+			.tparrows{
+				@include opacity-s();
+			}
+		}
+		@media(max-width: $screen-md-max){
+			.tparrows{
+				@include opacity-s();
+				&:before{
+					font-size: 40px !important;
+				}
+			}
+			.tp-leftarrow{
+				@include transform(translate(15px, -25px) !important);
+			}
+			.tp-rightarrow{
+				@include transform(translate(-15px, -25px) !important);
+				right: 0 !important;
+				left: auto !important;
+			}
+		}
+		@media(max-width: $screen-md-max){
+			.tp-bullets{
+				@include transform(translate(15px, -50px) !important);
+			}
+		}
+	}
+	.next-slider2{
+		@media(max-width: 1655px){
+			.tp-bullets{
+				@include rtl-left(50% !important);
+				@include transform(translate(-50%, -50px) !important);
+			}
+		}
+	}
+	.button-slider{
+		@media(max-width: $screen-xs-max){
+			padding: 0 35px !important;
+			line-height: 45px !important;
+			font-size:var(--font-size-body,$font-size-body) !important;
+		}
+	}
+}
+
+
+
