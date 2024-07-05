@@ -30,7 +30,7 @@ class gz_multilang extends gz_tpl{
 			'enqueue'  => [
 				//['type'=>'style' ,'load'=>true ,'prm'=>['font-awesome','//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css']],
 				['type'=>'style' ,'load'=>true ,'prm'=>[__CLASS__,'[REL_PATH]wp_style.css']],
-				['type'=>'script' ,'load'=>true ,'prm'=>[__CLASS__,'[REL_PATH]wp_script.js',['jquery-core']]],
+				['type'=>'script' ,'load'=>true ,'prm'=>[__CLASS__,'[REL_PATH]wp_script.js',['jquery-core','jquery-cookie']]],
 				//['type'=>'localize', 'prm'=>[__CLASS__,__CLASS__,[
 					//'menu_lang'	=> $this->render_menu_lang(),
 				//]]]
@@ -195,8 +195,10 @@ class gz_multilang extends gz_tpl{
 	}
 
 	function get_locale($locale=false){
-		$locale = isset($_COOKIE['gz_locale'])?$_COOKIE['gz_locale']:'th_TH';
+		//$locale = isset($_COOKIE['gz_locale'])?$_COOKIE['gz_locale']:'th_TH';
 		//if(isset($_GET['d'])) die("<pre>".print_r($locale));
+		if('en'==$this->get_current_lang()) $locale = 'en_US';
+		else $locale = 'th_TH';
 		return $locale;
 	}
 
@@ -461,22 +463,11 @@ class gz_multilang extends gz_tpl{
 	function get_current_lang(){
 		if (isset($_GET['lang'])) $lang = $_GET['lang'];
 		elseif (isset($_COOKIE['gz_lang'])) $lang = $_COOKIE['gz_lang'];
-		elseif (isset($_COOKIE['wp_lang'])) $lang = $_COOKIE['wp_lang'];
-		else $lang = substr( get_bloginfo ( 'language' ), 0, 2 );
-//		else $lang = "th";
+		//elseif (isset($_COOKIE['wp_lang'])) $lang = $_COOKIE['wp_lang'];
+		//else $lang = substr( get_bloginfo ( 'language' ), 0, 2 );
+		else $lang = "th";
+		//if(isset($_GET['d'])) { die('<pre>'.print_r(compact('lang'),true).'</pre>'); }
 		return $lang;
-	}
-	function theme_locale($locale=false,$domain=false){
-		$locale = isset($_COOKIE['gz_locale'])?$_COOKIE['gz_locale']:'th_TH';
-		return $locale;
-	}
-	function determine_locale($locale){
-		$locale = isset($_COOKIE['gz_locale'])?$_COOKIE['gz_locale']:'th_TH';
-		return $locale;
-	}
-	function pre_determine_locale(){
-		$locale = isset($_COOKIE['gz_locale'])?$_COOKIE['gz_locale']:'th_TH';
-		return $locale;
 	}
 
 	function show_debug_lang(){
@@ -511,49 +502,6 @@ class gz_multilang extends gz_tpl{
 	function woocommerce_breadcrumb(){
 		global $crumbs,$breadcrumb;
 		die('<pre>'.print_r($crumbs,true).print_r($breadcrumb,true));
-	}
-	*/
-
-	/*
-	function get_product_title(){
-		$titles = $this->split_langs(get_the_title()); //ob_clean(); die('<pre>'.print_r($titles,true));
-		$lang = $this->get_current_lang();
-		return isset($titles[$lang])?$titles[$lang]:get_the_title();
-	}
-	*/
-
-	/*
-	function split_langs($st,$langs=['th','en']){
-		$arr = explode('[:',$st);
-		$rs = [];
-		foreach($arr as $item){
-			$ss = substr($item,3);
-			if(strlen($ss)>0) $rs[substr($item,0,2)] = $ss;
-		}
-		return $rs;
-	}
-	*/
-
-	/*
-  	function render_menu_lang(){
-		$langs = [
-			'th' 	=> 'ไทย',
-			'en'	=> 'English',
-		];
-		$cl = $this->get_current_lang();
-		$html = '';
-		$html.= "<a cl='{$cl}'>".$langs[$cl]."</a>";
-		$langs[$cl] = null;
-		$html.= "<ul class='sub-menu'>";
-		foreach($langs as $k=>$item){
-			$html.= "<li class='menu-item'>";
-			#$url = admin_url('admin-ajax.php').'?lang='.$k;
-			$url = '?lang='.$k;
-			$html.= "<a href='{$url}'>".$item."</a>";
-			$html.= "</li>";
-		}
-		$html.= "</ul>";
-		return $html;
 	}
 	*/
 
