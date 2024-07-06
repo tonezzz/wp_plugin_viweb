@@ -19,9 +19,24 @@ RewriteRule . /index.php [L]
 AddType image/svg+xml svg
 AddType image/svg+xml svgz
 
-#<IfModule mod_rewrite.c>
-#RewriteEngine on
-#RewriteBase /
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteBase /
+
+# Empty = th
+#RewriteCond %{QUERY_STRING} ^$
+#RewriteRule ^$ /?lang=th [L]
+
+#RewriteCond %{HTTP_COOKIE} gz_lang=(.*)
+#RewriteRule ^$ /%1 [P,L]
+#RewriteRule ^$ /%1/$1 [R,L]
+
+#RewriteCond %{HTTP_COOKIE} gz_lang=(.*)
+#RewriteRule ^$ / [L]
+#RewriteCond %{HTTP:Cookie} (^|;\ *)gz_lang=([^;\ ]+)
+#RewriteRule ^$ /?lang=%2 [L]
+
+</IfModule>
 
 #RedirectMatch 302 /th https:\/\/thakarn.gizmo-thailand.com
 #RedirectMatch 302 /th/(.*) https:\/\/thakarn.gizmo-thailand.com/$2
@@ -44,4 +59,3 @@ AddType image/svg+xml svgz
 #RedirectMatch 302 /(.*) https://thakarn.gizmo-thailand.com/$1?lang=th
 #RedirectMatch 302 /en/(.*) https://thakarn.gizmo-thailand.com/$1?lang=en
 #RedirectMatch 302 /th/(.*) https://thakarn.gizmo-thailand.com/$1?lang=th
-#</IfModule>

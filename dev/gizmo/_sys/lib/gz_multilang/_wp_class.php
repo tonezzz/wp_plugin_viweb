@@ -31,9 +31,10 @@ class gz_multilang extends gz_tpl{
 				//['type'=>'style' ,'load'=>true ,'prm'=>['font-awesome','//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css']],
 				['type'=>'style' ,'load'=>true ,'prm'=>[__CLASS__,'[REL_PATH]wp_style.css']],
 				['type'=>'script' ,'load'=>true ,'prm'=>[__CLASS__,'[REL_PATH]wp_script.js',['jquery-core','jquery-cookie']]],
-				//['type'=>'localize', 'prm'=>[__CLASS__,__CLASS__,[
+				['type'=>'localize', 'prm'=>[__CLASS__,__CLASS__,[
+					'domain'	=> $_SERVER['HTTP_HOST']
 					//'menu_lang'	=> $this->render_menu_lang(),
-				//]]]
+				]]]
 			],
 			'cmb2v2' => [
 				['prm'=> [
@@ -117,6 +118,10 @@ class gz_multilang extends gz_tpl{
 			],
 		];
 		parent::__construct($config);
+		//header("gz_url: ".$_SERVER['REQUEST_URI']);
+		//header("lang: ".isset($_GET['lang'])?$_GET['lang']:'No');
+		header("gz_lang: " . (isset($_GET['lang'])?$_GET['lang']:'') );
+		if(isset($_GET['d'])) {ob_clean(); die("<pre>".print_r($_SERVER,true)); }
 	}
 
 	function init_modules(){
@@ -134,7 +139,7 @@ class gz_multilang extends gz_tpl{
 	}
 
 	function wp_nav_menu_ml($menu_items, $args){
-		if(is_admin() || wp_doing_ajax()) return $content;
+		if(is_admin()) return $content;
 		foreach($menu_items as $item) if(!empty($item->submegamenu)) {
 			if ($pp=$this->get_post_lang($item->submegamenu,$this->get_current_lang())){
 				$item->submegamenu = $pp->ID;
@@ -194,25 +199,16 @@ class gz_multilang extends gz_tpl{
 		//remove_action( 'storefront_page', 'storefront_page_content', 20);
 	}
 
-	function get_locale($locale=false){
-		//$locale = isset($_COOKIE['gz_locale'])?$_COOKIE['gz_locale']:'th_TH';
-		//if(isset($_GET['d'])) die("<pre>".print_r($locale));
-		if('en'==$this->get_current_lang()) $locale = 'en_US';
-		else $locale = 'th_TH';
-		return $locale;
-	}
-
 	/**
 	 * load_child_theme_textdomain($this->text_domain,get_stylesheet_directory().'/languages');
 	 */
 	function load_translations($force=false){
-		if(is_admin() && !wp_doing_ajax()) return;
-		//if(is_admin()) return;
+		if(is_admin()) return;
 		$path = WP_CONTENT_DIR."/languages/loco/";
 		//$rs = load_theme_textdomain('mafoil',$lang_dir.'themes/');
 		//$rs = load_plugin_textdomain('contact-form-7',false,$lang_dir.'plugins/');
 		//$rs = load_plugin_textdomain('woocommerce',false,$lang_dir.'plugins/');
-		if($this->get_current_lang()!='en'){
+		if('en'!=$this->get_current_lang()){
 			$lang = $this->get_current_lang();
 			$loaded = load_textdomain('mafoil',$path."themes/mafoil-{$lang}.mo");
 			$loaded = load_textdomain('woocommerce',$path."plugins/woocommerce-{$lang}.mo");
@@ -236,8 +232,8 @@ class gz_multilang extends gz_tpl{
 	
 	function get_suffix($debug=false){
 		//if($debug || isset($_GET['d'])) die('<br>'.print_r($_COOKIE['gz_lang'],true));
-		if($_COOKIE['gz_lang']=='th') $suffix = '';
-		else $suffix = '_'.$_COOKIE['gz_lang'];
+		if('th'==$this->get_lang()) $suffix = '';
+		else $suffix = '_'.$this->get_lang();
 		return $suffix;
 	}
 
@@ -245,8 +241,9 @@ class gz_multilang extends gz_tpl{
 	 * Elementor = no wpautop
 	 * Otherwise = wpautop
 	 */
-	function the_content($content,$post=false){ //if(isset($_GET['d'])) die($mafoil_settings['product-hot-label']);
-		if(is_admin() || wp_doing_ajax()) return $content;
+	function the_content($content,$post=false){
+		if(is_admin()) return $content;
+		//if(is_admin() && !wp_doing_ajax()) return $content;
 
 		if(empty($post)) global $post;
 		$autop = true;
@@ -280,7 +277,7 @@ class gz_multilang extends gz_tpl{
 		if(empty($post)) global $post;
 		$post_type=get_post_type($post);
 		$slug = get_post_field( 'post_name', $post ); $slug = str_replace(['_en','_th'],'',$slug); //Clean up language suffix.
-		$slug_lang = $slug.'_'.$_COOKIE['gz_lang'];
+		$slug_lang = $slug.'_'.$this->get_lang();
 		//if('page'===$post_type && isset($_GET['d'])) { ob_clean(); die('<pre>'.print_r(compact('post_type','lang','slug','slug_lang','post'),true)); }
 		$args = [
 			'post_type'      => 'any',
@@ -312,13 +309,15 @@ class gz_multilang extends gz_tpl{
 	//}
 
 	function get_term_ml($term, $taxonomy){
+		if(is_admin()) return $term;
+		//if(is_admin() && !wp_doing_ajax()) return $term;
 		$term_list = ['product_cat','product_tag','category'];
 		if(!in_array($taxonomy,$term_list)) return $term;
 		//if(isset($_GET['d']) && ('product_cat'==$taxonomy)) die('<pre>'.print_r(compact('term','taxonomy'),true));
 		if (empty($this->get_suffix())) return $term;
 		$term->name = $this->get_term_meta($term,'name',$this->get_current_lang());
 		$term->description = $this->get_term_meta($term,'description',$this->get_current_lang());
-		if(isset($_GET['d']) && ('product_cat'==$taxonomy)) die('<pre>'.print_r(compact('term','taxonomy'),true));
+		//if(isset($_GET['d']) && ('product_cat'==$taxonomy)) die('<pre>'.print_r(compact('term','taxonomy'),true));
 		return $term;
 	}
 
@@ -427,24 +426,28 @@ class gz_multilang extends gz_tpl{
 	 * 2. Use loale from user_lang_pref if login.
 	*/
 	function init_locale(){
-		if(is_admin() && !wp_doing_ajax()) return;
-
-		if(isset($_GET['lang'])){ //"lang=th or lang=en"
-			$lang = $_GET['lang'];
+		//if(is_admin() && !wp_doing_ajax()) return;
+		//if(isset($_GET['d'])) { die('<pre>'.$_COOKIE['gz_lang'].'</pre>'); }
+		//if(isset($_GET['lang'])){ //"lang=th or lang=en"
+		//	$lang = $_GET['lang'];
+		//	$rs = switch_to_locale($this->get_locale());
 			//if($user_id=get_current_user_id()) update_user_option($user_id,'user_lang_pref',$locale);
 			//$this->is_load_theme_textdomain = false; //Clear theme textdomain flag for reloading
-		}else{
+		//}
+		//else{
 			//$lang = "th";
 			//if($user_id=get_current_user_id()) $locale = get_user_option('user_lang_pref',$user_id );
-			$lang = isset($_COOKIE['gz_lang'])?$_COOKIE['gz_lang']:"";
-		}
-		$this->set_lang($lang);
+		//	$lang = isset($_COOKIE['gz_lang'])?$_COOKIE['gz_lang']:"";
+		//}
+		//$this->set_lang($lang);
 	}
 
 	function set_cookie($key,$val,$dur=60*60*24*355){
 		setcookie($key,$val,time()+$dur, '/', $_SERVER['HTTP_HOST']); $_COOKIE[$key] = $val;
+		//if(isset($_GET['d'])) { die('<pre>'.$_SERVER['HTTP_HOST'].'</pre>'); }
 	}
 
+	/*
 	function set_lang($lang=''){
 		global $gz_locale;
 		if(is_admin()) return;
@@ -459,8 +462,9 @@ class gz_multilang extends gz_tpl{
 		$this->set_cookie('gz_locale',$gz_locale);
 		$rs = switch_to_locale($gz_locale);
 	}
+	*/
 
-	function get_current_lang(){
+	function get_lang(){
 		if (isset($_GET['lang'])) $lang = $_GET['lang'];
 		elseif (isset($_COOKIE['gz_lang'])) $lang = $_COOKIE['gz_lang'];
 		//elseif (isset($_COOKIE['wp_lang'])) $lang = $_COOKIE['wp_lang'];
@@ -468,6 +472,15 @@ class gz_multilang extends gz_tpl{
 		else $lang = "th";
 		//if(isset($_GET['d'])) { die('<pre>'.print_r(compact('lang'),true).'</pre>'); }
 		return $lang;
+	}
+	function get_current_lang(){return $this->get_lang();}
+
+	function get_locale($locale=false){
+		//$locale = isset($_COOKIE['gz_locale'])?$_COOKIE['gz_locale']:'th_TH';
+		//if(isset($_GET['d'])) die("<pre>".print_r($locale));
+		if('en'==$this->get_lang()) $locale = 'en_US';
+		else $locale = 'th_TH';
+		return $locale;
 	}
 
 	function show_debug_lang(){
