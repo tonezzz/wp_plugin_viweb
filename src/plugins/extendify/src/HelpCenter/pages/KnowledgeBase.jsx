@@ -16,14 +16,14 @@ const mainArticles = [
 ];
 
 const allArticles = safeParseJson(
-	window.extHelpCenterData.resourceData,
+	window.extSharedData.resourceData,
 )?.supportArticles?.filter((article) => mainArticles.includes(article.slug));
 
 export const KnowledgeBaseDashboard = ({ onOpen }) => {
 	const { setSearchTerm } = useKnowledgeBaseStore();
 	return (
-		<section className="border rounded-md" data-test="help-center-kb-section">
-			<div className="bg-gray-100 p-2.5 pb-4 border-b border-gray-150">
+		<section className="rounded-md border" data-test="help-center-kb-section">
+			<div className="border-b border-gray-150 bg-gray-100 p-2.5 pb-4">
 				<h1 className="m-0 mb-3 p-0 text-lg font-medium">
 					{__('Knowledge Base', 'extendify-local')}
 				</h1>
@@ -57,7 +57,7 @@ export const KnowledgeBase = () => {
 					<SearchForm onChange={setSearchTerm} />
 				</div>
 				{loading && searchTerm ? (
-					<div className="p-8 text-base text-center">
+					<div className="p-8 text-center text-base">
 						<Spinner />
 					</div>
 				) : (

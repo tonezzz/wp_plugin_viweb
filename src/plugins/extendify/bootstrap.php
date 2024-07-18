@@ -17,6 +17,9 @@ use Extendify\Library\Admin as LibraryAdmin;
 use Extendify\Library\Frontend as LibraryFrontend;
 use Extendify\PartnerData;
 use Extendify\Shared\Admin as SharedAdmin;
+use Extendify\Shared\DataProvider\ResourceData;
+use Extendify\Shared\Services\Import\ImagesImporter;
+use Extendify\Shared\Services\VersionMigrator;
 
 if (!defined('EXTENDIFY_REQUIRED_CAPABILITY')) {
     define('EXTENDIFY_REQUIRED_CAPABILITY', 'manage_options');
@@ -42,10 +45,18 @@ if (is_readable(EXTENDIFY_PATH . 'vendor/autoload.php')) {
 new LibraryFrontend();
 // This file hooks into an external task and should always load.
 new Insights();
+// This class set up the image import check scheduler.
+new ImagesImporter();
+
+// Set up scheduled cache (if opt-in).
+ResourceData::scheduleCache();
+
+// Run various database updates depending on the plugin version.
+new VersionMigrator();
 
 if (current_user_can(EXTENDIFY_REQUIRED_CAPABILITY)) {
     // The config class will collect information about the
-    // partner and plugin so it's easier to access.
+    // partner and plugin, so it's easier to access.
     new Config();
     if (!defined('EXTENDIFY_DEVMODE')) {
         define('EXTENDIFY_DEVMODE', Config::$environment === 'DEVELOPMENT');

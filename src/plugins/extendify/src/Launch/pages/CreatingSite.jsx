@@ -11,13 +11,20 @@ import {
 	getPageById,
 	getActivePlugins,
 	prefetchAssistData,
+	updateUserMeta,
+	postLaunchFunctions,
 } from '@launch/api/WPApi';
 import { PagesSkeleton } from '@launch/components/CreatingSite/PageSkeleton';
 import { useConfetti } from '@launch/hooks/useConfetti';
 import { useWarnOnLeave } from '@launch/hooks/useWarnOnLeave';
+import { updateButtonLinks } from '@launch/lib/linkPages';
 import { uploadLogo } from '@launch/lib/logo';
 import { waitFor200Response, wasInstalled } from '@launch/lib/util';
-import { createPages, updateGlobalStyleVariant } from '@launch/lib/wp';
+import {
+	createWpPages,
+	generateCustomPageContent,
+	updateGlobalStyleVariant,
+} from '@launch/lib/wp';
 import { usePagesStore } from '@launch/state/Pages';
 import { useUserSelectionStore } from '@launch/state/user-selections';
 import { Logo, Spinner } from '@launch/svg';
@@ -67,6 +74,10 @@ export const CreatingSite = () => {
 			await waitFor200Response();
 			await updateTemplatePart('extendable/footer', style?.footerCode);
 
+			if (businessInformation.acceptTerms) {
+				await updateUserMeta('ai_consent', true);
+			}
+
 			if (plugins?.length) {
 				inform(__('Installing necessary plugins', 'extendify-local'));
 				const pluginsGiveFirst = [...plugins].sort(({ wordpressSlug }) =>
@@ -95,7 +106,7 @@ export const CreatingSite = () => {
 				await waitFor200Response();
 			}
 
-			let pageIds, navPages;
+			let navPages;
 			inform(__('Adding page content', 'extendify-local'));
 			informDesc(__('Starting off with a full website', 'extendify-local'));
 			await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -127,13 +138,19 @@ export const CreatingSite = () => {
 				hasBlogGoal ? blogPage : null,
 			].filter(Boolean);
 
-			pageIds = await createPages(pagesToCreate, {
-				goals,
-				businessInformation,
-				siteType,
-				siteInformation,
-				siteTypeSearch,
-			});
+			const pagesWithCustomContent = await generateCustomPageContent(
+				pagesToCreate,
+				{
+					goals,
+					businessInformation,
+					siteType,
+					siteInformation,
+					siteTypeSearch,
+				},
+			);
+
+			const createdPages = await createWpPages(pagesWithCustomContent);
+			const pagesWithLinksUpdated = await updateButtonLinks(createdPages);
 
 			setPagesToAnimate([]);
 			await waitFor200Response();
@@ -199,7 +216,7 @@ export const CreatingSite = () => {
 
 			const updatedHeaderCode = await addLaunchPagesToNav(
 				navPages,
-				pageIds,
+				pagesWithLinksUpdated,
 				style?.headerCode,
 			);
 
@@ -222,8 +239,6 @@ export const CreatingSite = () => {
 				'extendify_onboarding_completed',
 				new Date().toISOString(),
 			);
-
-			return pageIds;
 		} catch (e) {
 			console.error(e);
 			// if the error is 4xx, we should stop trying and prompt them to reload
@@ -253,8 +268,12 @@ export const CreatingSite = () => {
 	]);
 
 	useEffect(() => {
-		doEverything().then(() => {
+		doEverything().then(async () => {
 			setPage(0);
+
+			// This will trigger the post launch php functions.
+			await postLaunchFunctions();
+
 			window.location.replace(
 				window.extSharedData.adminUrl +
 					'admin.php?page=extendify-assist&extendify-launch-success',
@@ -294,7 +313,7 @@ export const CreatingSite = () => {
 			enter="transition-all ease-in-out duration-500"
 			enterFrom="md:w-40vw md:max-w-md"
 			enterTo="md:w-full md:max-w-full"
-			className="bg-banner-main text-banner-text py-12 px-10 md:h-screen flex flex-col justify-between shrink-0">
+			className="flex shrink-0 flex-col justify-between bg-banner-main px-10 py-12 text-banner-text md:h-screen">
 			<div className="max-w-prose">
 				<div className="md:min-h-48">
 					{window.extSharedData?.partnerLogo ? (
@@ -306,7 +325,7 @@ export const CreatingSite = () => {
 							/>
 						</div>
 					) : (
-						<Logo className="logo text-banner-text w-32 sm:w-40 mb-8" />
+						<Logo className="logo mb-8 w-32 text-banner-text sm:w-40" />
 					)}
 					<div data-test="message-area">
 						{info.map((step, index) => {
@@ -321,14 +340,14 @@ export const CreatingSite = () => {
 										leave="transition-opacity duration-1000"
 										leaveFrom="opacity-100"
 										leaveTo="opacity-0"
-										className="text-4xl flex space-x-4 items-center"
+										className="flex items-center space-x-4 text-4xl"
 										key={step}>
 										{step}
 									</Transition>
 								);
 							}
 						})}
-						<div className="flex space-x-4 items-center mt-6">
+						<div className="mt-6 flex items-center space-x-4">
 							<Spinner className="spin" />
 							{infoDesc.map((step, index) => {
 								if (!index) {
