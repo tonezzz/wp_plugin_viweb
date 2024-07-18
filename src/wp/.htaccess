@@ -1,3 +1,40 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+RewriteRule ^/(th|en|fr)(.*) /$2?gz_lang=$1&xx=xx
+
+#RewriteCond %{REQUEST_URI} ^(.*)$ [NC]
+#RewriteRule ^(.*)$ /$1?gz_lang=$1&xx=xx
+#RewriteRule ^/(th|en|fr)/(.*)$ /$2?gz_lang=$1&xx=xx
+
+#RewriteCond %{REQUEST_URI} ^/(th|en|fr)/ [NC]
+#RewriteRule ^(.*)$ $1?gz_lang=set_%1_$1 [QSA]
+#RewriteRule ^(.*)$ - [CO=gz_lang:set_%1_$1:%{SERVER_NAME}:86400]
+
+#RewriteCond %{REQUEST_URI} ^/(th|en|fr)/ [NC]
+#RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/test?uri=$1&urix=%1&gz_lang=%1&redirect=0 [CO=gz_lang:%{SERVER_NAME}:86400:,P]
+
+#RewriteCond %{REQUEST_URI} ^(en)/ [NC]
+#RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/test?uri=$1&urixx=%1&gz_lang=%1&redirect=0 [CO=gz_lang:xx%1:%{SERVER_NAME}:86400:,P]
+#RewriteRule ^/(en)/(.*)$ - [CO=test:$1_%1:%{SERVER_NAME}:86400]
+
+#RewriteCond %{REQUEST_URI} !^/index.html [NC]
+#RewriteCond %{REQUEST_URI} !^/test/ [NC]
+#RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/test?uri=$1&urix=%1&gz_lang=%1&redirect=0&%{QUERY_STRING} [CO=gz_lang:test_%1_$1:%{SERVER_NAME}:86400:,P]
+
+#RewriteCond %{REQUEST_URI} !^/(en|th!fr)/ [NC]
+
+#RewriteRule ^(.*)$ - [CO=gz_lang:xx]
+#RewriteCond %{REQUEST_URI} ^(th|en|fr)/ [NC]
+#RewriteRule ^(.*)$ - [CO=gz_lang:xx]
+
+#For testing
+</IfModule>
+
+# Add SVG Mime Types
+AddType image/svg+xml svg
+AddType image/svg+xml svgz
 
 # BEGIN WordPress
 # The directives (lines) between "BEGIN WordPress" and "END WordPress" are
@@ -14,48 +51,3 @@ RewriteRule . /index.php [L]
 </IfModule>
 
 # END WordPress
-
-# Add SVG Mime Types
-AddType image/svg+xml svg
-AddType image/svg+xml svgz
-
-<IfModule mod_rewrite.c>
-RewriteEngine on
-RewriteBase /
-
-# Empty = th
-#RewriteCond %{QUERY_STRING} ^$
-#RewriteRule ^$ /?lang=th [L]
-
-#RewriteCond %{HTTP_COOKIE} gz_lang=(.*)
-#RewriteRule ^$ /%1 [P,L]
-#RewriteRule ^$ /%1/$1 [R,L]
-
-#RewriteCond %{HTTP_COOKIE} gz_lang=(.*)
-#RewriteRule ^$ / [L]
-#RewriteCond %{HTTP:Cookie} (^|;\ *)gz_lang=([^;\ ]+)
-#RewriteRule ^$ /?lang=%2 [L]
-
-</IfModule>
-
-#RedirectMatch 302 /th https:\/\/thakarn.gizmo-thailand.com
-#RedirectMatch 302 /th/(.*) https:\/\/thakarn.gizmo-thailand.com/$2
-
-#RedirectMatch 302 /en https:\/\/thakarn.gizmo-thailand.com/?lang=en
-#RedirectMatch 302 /en/(.*) https:\/\/thakarn.gizmo-thailand.com/$2?lang=en
-
-#RewriteCond %{HTTP:Accept-Language} ^(en|be|uk|kk) [NC]
-#RewriteCond %{REQUEST_URI} ^/en/(.*)
-#RewriteRule (.*) /$1?lang=en [P,L,R=301]
-
-# Rewrite "/<lang>/<directory>/" to `/<directory>/index.php?lang=<lang>"
-#RewriteCond %{DOCUMENT_ROOT}/$2/index.php -f
-#RewriteRule ^([a-z]{2})/(.*?)/?$ $2/index.php?lang=$1 [L]
-
-# Rewrite "/<lang>/<directory>/<file>" to `/<directory>/<file>?lang=<lang>"
-#RewriteCond %{DOCUMENT_ROOT}/$2 -f
-#RewriteRule ^([a-z]{2})/(.+) $2?lang=$1 [L]
-
-#RedirectMatch 302 /(.*) https://thakarn.gizmo-thailand.com/$1?lang=th
-#RedirectMatch 302 /en/(.*) https://thakarn.gizmo-thailand.com/$1?lang=en
-#RedirectMatch 302 /th/(.*) https://thakarn.gizmo-thailand.com/$1?lang=th

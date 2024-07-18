@@ -1,4 +1,18 @@
 <?php //die(dirname(__FILE__));
+if(isset($_GET['drw'])) {
+	echo '<a href="/en/?drw">/en/</a>';
+	global $wp_query,$wp_rewrite;
+	ob_clean(); die("<pre>".print_r([
+		'xx'			=> 'xx',
+		'__FILE__'      => __FILE__,
+		'SERVER_NAME'   => $_SERVER['SERVER_NAME'],
+		'REQUEST_URI'   => $_SERVER['REQUEST_URI'],
+		'QUERY_STRING'  => $_SERVER['QUERY_STRING'],
+		'_GET'          => $_GET,
+		'_COOKIE'       => $_COOKIE,
+		'_SERVER'       =>  $_SERVER,
+	],true));
+}
 /*
 * gz_facebook() class.
 *	- Render page badge in iFrame.
@@ -16,6 +30,7 @@ die
 
 global $gz_locale;
 
+require dirname(__FILE__)."/_gz_rewrite_ml.php";
 require dirname(__FILE__)."/_gz_menu_ml.php";
 require dirname(__FILE__)."/_gz_quickedit_ml.php";
 
@@ -67,7 +82,7 @@ class gz_multilang extends gz_tpl{
 						'fields' 				=> [
 							['id'=>'post_title_en' ,'name'=>__('Title (English)',$this->text_domain) ,'type'=>'text'],
 						]
-						],
+					],
 				],
 			],
   		   	'ajaxes' => [
@@ -79,28 +94,30 @@ class gz_multilang extends gz_tpl{
 				//['prm'=>['woocommerce_before_main_content','woocommerce_breadcrumb',20]],
 			],
 			'filters' => [
-				//['prm'=>['woocommerce_get_breadcrumb',[$this,'breadcrumb_ml'],10,2]],
-				//['prm'=>['woocommerce_before_shop_loop',[$this,'get_cat_banner'],10,2]],
+				//['prm'=>['query_vars',[$this,'public_query_vars']]],
+				//['prm'=>['wp_redirect',[$this,'redirect_ml']]],
 				['prm'=>['wp_nav_menu_objects',[$this,'wp_nav_menu_ml'],10,2]],
 				['prm'=>['the_title',[$this,'the_title'],10,2]],
 				['prm'=>['the_content',[$this,'the_content'],20,2]],
-				//['prm'=>['get_the_excerpt',[$this,'get_the_excerpt'],21,2]],
 				['prm'=>['woocommerce_short_description',[$this,'get_the_excerpt'],21,2]],
 				['prm'=>['get_term',[$this,'get_term_ml'],10,2]],
-				//['prm'=>['get_taxonomy',[$this,'get_term_ml'],10,2]],
 				['prm'=>['locale',[$this,'get_locale']],10,1],
+				['prm'=>['gz_rewrite_ml_support_langs',[$this,'gz_rewrite_ml_support_langs']],10,1],
+				['prm'=>['gz_rewrite_ml_default_lang',[$this,'gz_rewrite_ml_default_lang']],10,1],
+				//['prm'=>['wp_list_categories',[$this,'wp_list_categories_ml']],10,2],
+				//['prm'=>['get_taxonomy',[$this,'get_term_ml'],10,2]],
+				//['prm'=>['get_the_excerpt',[$this,'get_the_excerpt'],21,2]],
+				//['prm'=>['woocommerce_get_breadcrumb',[$this,'breadcrumb_ml'],10,2]],
+				//['prm'=>['woocommerce_before_shop_loop',[$this,'get_cat_banner'],10,2]],
 				//['prm'=>['theme_locale',[$this,'theme_locale'],10,2]],
 				//['prm'=>['determine_locale',[$this,'determine_locale']]],
 				//['prm'=>['pre_determine_locale',[$this,'get_locale'],10,1]],
-
 				//['prm'=>['woocommerce_cart_shipping_method_full_label',[$this,'woocommerce_cart_shipping_method_full_label'],10,2]],
 				//['prm'=>['woocommerce_shipping_rate_label',[$this,'woocommerce_shipping_rate_label'],10,2]],
 				//['prm'=>['woocommerce_gateway_title',[$this,'woocommerce_gateway_title'],10,2]],
 				//['prm'=>['woocommerce_gateway_description',[$this,'woocommerce_gateway_description'],10,2]],
 				//['prm'=>['woocommerce_cart_item_name',[$this,'woocommerce_cart_item_name'],10,3]],
-
 				//['prm'=>['wp_setup_nav_menu_item',[$this,'filter_menu_lang'],1]],
-				//Old
 				//['prm'=>['woocommerce_get_breadcrumb',[$this,'woocommerce_get_breadcrumb'],10,2]],
 				//['prm'=>['woocommerce_before_main_content',[$this,'woocommerce_breadcrumb'],20,2]],
 				//['prm'=>['woocommerce_before_main_content',[$this,'woocommerce_breadcrumb'],20]],
@@ -109,10 +126,11 @@ class gz_multilang extends gz_tpl{
 				//['prm'=>['wpautop','wpautop']],
 			],
 			'actions' => [
+				//['prm'=>['init',[$this,'rewrite_ml']]],
 				['prm'=>['wp_footer',[$this,'footer_ml'],20]],
-				['prm'=>['after_setup_theme',[$this,'after_setup_theme']]],
+				['prm'=>['template_redirect',[$this,'init_ml']]],	//Init multi lang when everything is loaded.
 				//['prm'=>['get_footer',[$this,'get_footer']]],
-				['prm'=>['init',[$this,'load_translations']]],
+				//['prm'=>['init',[$this,'load_translations']]],
 				['prm'=>['admin_menu',[$this,'admin_menu']]],
 				['prm'=>['init',[$this,'init_modules']]],
 			],
@@ -120,18 +138,121 @@ class gz_multilang extends gz_tpl{
 		parent::__construct($config);
 		//header("gz_url: ".$_SERVER['REQUEST_URI']);
 		//header("lang: ".isset($_GET['lang'])?$_GET['lang']:'No');
-		header("gz_lang: " . (isset($_GET['lang'])?$_GET['lang']:'') );
-		if(isset($_GET['d'])) {ob_clean(); die("<pre>".print_r($_SERVER,true)); }
+		//header("gz_lang: " . ($_SERVER['REQUEST_URI']) );
+		//if(isset($_GET['dv'])) {ob_clean(); die("<pre>".print_r($_SERVER,true)); }
 	}
 
 	function init_modules(){
 		if (class_exists('gz_menu_ml')) $this->gz_menu_ml = new gz_menu_ml($this->text_domain);
 		if (class_exists('gz_quickedit_ml')) $this->gz_quickedit_ml = new gz_quickedit_ml($this->text_domain);
+		//gz_rewrite_ml is init as a static class
+	}
+	
+	function gz_rewrite_ml_support_langs($langs){ return array_unique(['th','en','gr']); }
+	function gz_rewrite_ml_default_lang($langs){ return 'th'; }
+
+	function public_query_vars($qv){
+		$qv[] = 'redirect';
+		return $qv;
 	}
 
+	function redirect_ml($location){ //die(__FILE__);
+		$redirect = get_query_var('redirect');
+		//if(isset($_GET['d'])) {ob_clean(); die("<pre>".print_r(compact('location','redirect'),true)); }
+		if (!empty($redirect)) return false;
+		return $location;
+	}
+
+	function wp_list_categories_ml($args){ //echo "xx";
+		//if(isset($_GET['d'])) {ob_clean(); die("<pre>".print_r(compact('args'),true)); }
+	}
+
+	function init_ml(){//die(__FILE__);
+		if(is_admin() ) return;
+		if(isset($_GET['drwml'])) {global $wp_query,$wp_rewrite; ob_clean(); die("<pre>".print_r([
+			//'$_SERVER' => $_SERVER,
+			'$_COOKIE' => $_COOKIE,
+			'gz_lang' => get_query_var('gz_lang'),
+			'get_supported_langs' => gz_rewrite_ml::get_supported_langs(),
+			'get_default_lang' => gz_rewrite_ml::get_default_lang(),
+			'current_action' => current_action(),
+			'_GET' => $_GET,
+			'wp_rewrite' => $wp_rewrite,
+			'wp_query' => $wp_query,
+		],true)); }
+
+		$lang=$this->get_lang(); $this->set_lang($lang); //If lang is not set, set to "th"
+	}
+	
+	function set_lang($lang){
+		$this->set_cookie('gz_lang',$lang);
+		//$this->init_locale();
+		$this->load_translations(true);
+		//remove_action( 'storefront_page', 'storefront_page_content', 20);
+	}
+	
+	function get_lang(){
+		$gz_lang = isset($_COOKIE['gz_lang'])?$_COOKIE['gz_lang']:'th';
+		return $gz_lang;
+	}
+	function get_current_lang(){return $this->get_lang();}
+
+	function get_locale($locale=false){
+		//$locale = isset($_COOKIE['gz_locale'])?$_COOKIE['gz_locale']:'th_TH';
+		//if(isset($_GET['d'])) die("<pre>".print_r($locale));
+		if('en'==$this->get_lang()) $locale = 'en_US';
+		else $locale = 'th_TH';
+		return $locale;
+	}
+
+	function init_locale(){
+		if(is_admin() ) return;
+
+
+		//if(isset($_GET['d'])) {ob_clean(); echo '<pre>'; global $wp_query; print_r($wp_query); die();}
+
+
+		//$lang = get_query_var('lang'); if(isset($_GET['d'])) { die('<pre>'.print_r($lang,true).'</pre>'); }
+
+		//if(isset($_GET['d'])) { die('<pre>'.$_COOKIE['gz_lang'].'</pre>'); }
+		//die('<pre>'.print_r([$this->get_lang(),$this->get_locale()],true));
+		//if(isset($_GET['lang'])){ //"lang=th or lang=en"
+		//	$lang = $_GET['lang'];
+		//	$this->set_cookie('gz_lang',$lang);
+		//	$locale = $this->get_locale();
+		//	$this->set_cookie('wp_lang',$locale);
+		//	$rs = switch_to_locale($locale);
+			//$lang = $_GET['lang'];
+			//if($user_id=get_current_user_id()) update_user_option($user_id,'user_lang_pref',$locale);
+			//$this->is_load_theme_textdomain = false; //Clear theme textdomain flag for reloading
+		//}
+		//else{
+			//$lang = "th";
+			//if($user_id=get_current_user_id()) $locale = get_user_option('user_lang_pref',$user_id );
+		//	$lang = isset($_COOKIE['gz_lang'])?$_COOKIE['gz_lang']:"";
+		//}
+		//$this->set_lang($lang);
+	}
+
+	/**
+	 * load_child_theme_textdomain($this->text_domain,get_stylesheet_directory().'/languages');
+	 */
+	function load_translations($force=false){
+		if(is_admin()) return;
+		$path = WP_CONTENT_DIR."/languages/loco/";
+		//$rs = load_theme_textdomain('mafoil',$lang_dir.'themes/');
+		//$rs = load_plugin_textdomain('contact-form-7',false,$lang_dir.'plugins/');
+		//$rs = load_plugin_textdomain('woocommerce',false,$lang_dir.'plugins/');
+		if('en'!=$this->get_current_lang()){
+			$lang = $this->get_current_lang();
+			$loaded = load_textdomain('mafoil',$path."themes/mafoil-{$lang}.mo");
+			$loaded = load_textdomain('woocommerce',$path."plugins/woocommerce-{$lang}.mo");
+			$loaded = load_textdomain('contact-form-7',$path."plugins/contact-form-7-{$lang}.mo");
+			//$loaded = load_textdomain('localizationsample',$path."plugins/localizationsample-{$lang}.mo");
+		}
+	}
 	function get_cat_banner($a, $b=0 ){
 		return "hello";
-		//if(isset($_GET['d'])) {ob_clean(); die("<pre>".print_r(compact('a','b'),true)); }
 		//foreach($crumbs as &$item){
 		//	$item['id'] = url_to_postid($item[1]);
 		//}
@@ -191,30 +312,6 @@ class gz_multilang extends gz_tpl{
 		//$mafoil_settings = mafoil_global_settings();
 		//if(isset($_GET['d'])) {ob_clean(); die("<pre>".print_r($mafoil_settings)); }
 		return false;
-	}
-
-	function after_setup_theme(){//die(__FILE__);
-		$this->init_locale();
-		$this->load_translations(true);
-		//remove_action( 'storefront_page', 'storefront_page_content', 20);
-	}
-
-	/**
-	 * load_child_theme_textdomain($this->text_domain,get_stylesheet_directory().'/languages');
-	 */
-	function load_translations($force=false){
-		if(is_admin()) return;
-		$path = WP_CONTENT_DIR."/languages/loco/";
-		//$rs = load_theme_textdomain('mafoil',$lang_dir.'themes/');
-		//$rs = load_plugin_textdomain('contact-form-7',false,$lang_dir.'plugins/');
-		//$rs = load_plugin_textdomain('woocommerce',false,$lang_dir.'plugins/');
-		if('en'!=$this->get_current_lang()){
-			$lang = $this->get_current_lang();
-			$loaded = load_textdomain('mafoil',$path."themes/mafoil-{$lang}.mo");
-			$loaded = load_textdomain('woocommerce',$path."plugins/woocommerce-{$lang}.mo");
-			$loaded = load_textdomain('contact-form-7',$path."plugins/contact-form-7-{$lang}.mo");
-			//$loaded = load_textdomain('localizationsample',$path."plugins/localizationsample-{$lang}.mo");
-		}
 	}
 
 	/*
@@ -304,19 +401,18 @@ class gz_multilang extends gz_tpl{
 
 	//function get_taxonomy_ml($_term, $taxonomy){
 	//	if(is_admin() && !wp_doing_ajax()) return $_term;
-	//	if(isset($_GET['d'])) { die('<pre>'.print_r(compact('_term','taxonomy'),true).'</pre>'); }
 	//	return $_term;
 	//}
 
 	function get_term_ml($term, $taxonomy){
 		if(is_admin()) return $term;
-		//if(is_admin() && !wp_doing_ajax()) return $term;
+
 		$term_list = ['product_cat','product_tag','category'];
 		if(!in_array($taxonomy,$term_list)) return $term;
 		//if(isset($_GET['d']) && ('product_cat'==$taxonomy)) die('<pre>'.print_r(compact('term','taxonomy'),true));
 		if (empty($this->get_suffix())) return $term;
-		$term->name = $this->get_term_meta($term,'name',$this->get_current_lang());
-		$term->description = $this->get_term_meta($term,'description',$this->get_current_lang());
+		$term->name = $this->get_term_meta_ml($term,'post_title'); //name,post_title
+		$term->description = $this->get_term_meta_ml($term,'description');
 		//if(isset($_GET['d']) && ('product_cat'==$taxonomy)) die('<pre>'.print_r(compact('term','taxonomy'),true));
 		return $term;
 	}
@@ -324,9 +420,11 @@ class gz_multilang extends gz_tpl{
 	/**
 	 * get_term_meta() - Get termmeta according to $lang (or default.)
 	 */
-	function get_term_meta($term,$key,$single=false,$lang=false,$default=false){
-		if ($val = get_term_meta($term->id,$key.$this->get_suffix(),$single)) return $val;
-		else return $term->$key;
+	function get_term_meta_ml($term,$key,$single=true,$lang=false,$default=false){
+		$suffix = $this->get_suffix();
+		//if(isset($_GET['d']) && 'ถุงมือ'==$term->name) { die('<pre>'.print_r(compact('term','key','single','suffix'),true).'</pre>'); }
+		if ($val = get_term_meta($term->term_id,$key.$this->get_suffix(),$single)) return $val;
+		else return $term->name;
 	}
 
 	function get_field_lang($post,$fn,$lang=false,$default=''){ //if(isset($_GET['d'])) die($fn);
@@ -416,31 +514,6 @@ class gz_multilang extends gz_tpl{
 	function woocommerce_single_product_summary(){
 		echo $this->get_product_title();
 	}
-	  
-	///////////////////////
-	//Initializing functions
-	//
-
-	/*
-	 * 1. Use locale param if availabe.  Also update user_lang_pref if login.
-	 * 2. Use loale from user_lang_pref if login.
-	*/
-	function init_locale(){
-		//if(is_admin() && !wp_doing_ajax()) return;
-		//if(isset($_GET['d'])) { die('<pre>'.$_COOKIE['gz_lang'].'</pre>'); }
-		//if(isset($_GET['lang'])){ //"lang=th or lang=en"
-		//	$lang = $_GET['lang'];
-		//	$rs = switch_to_locale($this->get_locale());
-			//if($user_id=get_current_user_id()) update_user_option($user_id,'user_lang_pref',$locale);
-			//$this->is_load_theme_textdomain = false; //Clear theme textdomain flag for reloading
-		//}
-		//else{
-			//$lang = "th";
-			//if($user_id=get_current_user_id()) $locale = get_user_option('user_lang_pref',$user_id );
-		//	$lang = isset($_COOKIE['gz_lang'])?$_COOKIE['gz_lang']:"";
-		//}
-		//$this->set_lang($lang);
-	}
 
 	function set_cookie($key,$val,$dur=60*60*24*355){
 		setcookie($key,$val,time()+$dur, '/', $_SERVER['HTTP_HOST']); $_COOKIE[$key] = $val;
@@ -464,25 +537,6 @@ class gz_multilang extends gz_tpl{
 	}
 	*/
 
-	function get_lang(){
-		if (isset($_GET['lang'])) $lang = $_GET['lang'];
-		elseif (isset($_COOKIE['gz_lang'])) $lang = $_COOKIE['gz_lang'];
-		//elseif (isset($_COOKIE['wp_lang'])) $lang = $_COOKIE['wp_lang'];
-		//else $lang = substr( get_bloginfo ( 'language' ), 0, 2 );
-		else $lang = "th";
-		//if(isset($_GET['d'])) { die('<pre>'.print_r(compact('lang'),true).'</pre>'); }
-		return $lang;
-	}
-	function get_current_lang(){return $this->get_lang();}
-
-	function get_locale($locale=false){
-		//$locale = isset($_COOKIE['gz_locale'])?$_COOKIE['gz_locale']:'th_TH';
-		//if(isset($_GET['d'])) die("<pre>".print_r($locale));
-		if('en'==$this->get_lang()) $locale = 'en_US';
-		else $locale = 'th_TH';
-		return $locale;
-	}
-
 	function show_debug_lang(){
 		echo '<pre>'.print_r([
 			'is_admin()'		=> is_admin(),
@@ -498,26 +552,6 @@ class gz_multilang extends gz_tpl{
 		],true).'</pre>';
 	}
 	///////////////////////////////////////////
-
-	/*
-	function woocommerce_get_breadcrumb($crumbs,$breadcrumb){
-		//$lang = $this->get_current_lang();
-		//foreach($crumbs as &$item){
-		//	$arr = $this->split_langs($item[0]);
-		//	$item[0] = isset($arr[$lang])?$arr[$lang]:$item[0];
-		//}
-		return $crumbs;
-		//die('<pre>'.print_r($crumbs,true).print_r($breadcrumb,true));
-	}
-	*/
-
-	/*
-	function woocommerce_breadcrumb(){
-		global $crumbs,$breadcrumb;
-		die('<pre>'.print_r($crumbs,true).print_r($breadcrumb,true));
-	}
-	*/
-
 }
 
 

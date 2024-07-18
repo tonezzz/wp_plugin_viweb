@@ -13,6 +13,12 @@ RUN apt install -y zlib1g-dev \
 # Install PHP MySQL extension
 RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
 
+# Install soap Client
+RUN apt-get update && \
+    apt-get install -y libxml2-dev
+
+RUN    docker-php-ext-install soap
+
 RUN apt-get install -y \
     libfreetype6-dev \
     libjpeg62-turbo-dev \

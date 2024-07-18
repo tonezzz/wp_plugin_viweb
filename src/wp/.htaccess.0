@@ -1,0 +1,50 @@
+
+# Add SVG Mime Types
+AddType image/svg+xml svg
+AddType image/svg+xml svgz
+
+# BEGIN WordPress
+# The directives (lines) between "BEGIN WordPress" and "END WordPress" are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+# END WordPress
+
+
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    RewriteBase /
+
+    RewriteCond %{REQUEST_URI} !^/(en|th|test)/(.*)$
+    RewriteRule ^(.*)$  https:\/\/%{SERVER_NAME}/test/index.php?%{QUERY_STRING}&uri=$1&urix=%1&lang=en&redirect=0 [P]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} !favicon.ico [NC]
+    RewriteCond %{REQUEST_URI} !index.html [NC]
+
+    RewriteCond %{QUERY_STRING} !(?:^|&)lang=(en|th) [NC]
+    RewriteCond %{REQUEST_URI} !^/(en)/$ [NC]
+
+    #RewriteRule ^index\.php$ https:\/\/%{SERVER_NAME}/index.php?lang=th&redirect=0 [P]
+
+    #RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/$1?lang=th&redirect=0 [P]
+    #RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/$1?%{QUERY_STRING}&lang=th&redirect=0 [P]
+    RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/test/index.php?%{QUERY_STRING}&uri=$1&urix=%1&lang=th&redirect=0 [P]
+    
+    #If no gz_lang in prm, get it from cookie.
+    #RewriteCond %{QUERY_STRING} !(?:^|&)lang=(en|th)
+    #RewriteCond %{HTTP_COOKIE} gz_lang=(en|th)
+    #RewriteRule ^$ $1?lang=%1 [P,L]
+
+</IfModule>

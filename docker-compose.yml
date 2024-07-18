@@ -20,6 +20,16 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - ./dockers/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./dockers/apache/hosts:/etc/hosts
+      - ./dockers/apache/hostname:/etc/hostname
+     
+      - ./dockers/apache/sites-enabled:/etc/apache2/sites-enabled
+      - ./dockers/apache/sites-available:/etc/apache2/sites-available
+      - ./dockers/apache/conf-enabled:/etc/apache2/conf-enabled
+      - ./dockers/apache/config-available:/etc/apache2/config-available
+      - ./dockers/apache/extra:/usr/local/apache2/conf/extra
+
       - ./src/wp:/usr/local/apache2/htdocs
       - ./src/plugins:/usr/local/apache2/htdocs/wp-content/plugins
       - ./src/themes:/usr/local/apache2/htdocs/wp-content/themes
@@ -27,25 +37,15 @@ services:
       - ./dev/languages:/usr/local/apache2/htdocs/wp-content/languages
       - ./dev/img:/usr/local/apache2/htdocs/img
       - ./dev/gizmo:/usr/local/apache2/htdocs/wp-content/plugins/gizmo
-      - ./dockers/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
-      - ./dockers/apache/httpd-ssl.conf/usr/local/apache2/conf/extra/httpd-ssl.conf
-      - ./dockers/apache/sites-enabled:/etc/apache2/sites-enabled
-      - ./dockers/apache/config-available:/etc/apache2/config-available
+
       - ./persistent-data/uploads:/usr/local/apache2/htdocs/wp-content/uploads
-      #- ./dockers/apache/ssl/server.crt:/usr/local/apache2/conf/server.crt
-      #- ./dockers/apache/ssl/server.key:/usr/local/apache2/conf/server.key
-      - ./tmp/log:/var/log
-      #- ./dockers/apache/init:/init
-      ##### Certbot
+      - ./persistent-data/apache-logs:/usr/local/apache2/logs
+
       - ./persistent-data/letsencrypt:/etc/letsencrypt
-      - ./persistent-data/letsencrypt/live/thakarn.gizmo-thailand.com/fullchain.pem:/usr/local/apache2/conf/server.crt
-      - ./persistent-data/letsencrypt/live/thakarn.gizmo-thailand.com/privkey.pem:/usr/local/apache2/conf/server.key
-      #Cer-dir: /etc/letsencrypt/live/thakarn.gizmo-thailand.com/fullchain.pem
-      #Key-dir: /etc/letsencrypt/live/thakarn.gizmo-thailand.com/privkey.pem
       #Renew: docker exec -i wp_plugin_viweb_apache certbot certonly --webroot -w /usr/local/apache2/htdocs -d thakarn.gizmo-thailand.com
     depends_on:
       - php-fpm
-  
+
   php-fpm:
     build:
       context: ./dockers/php-fpm

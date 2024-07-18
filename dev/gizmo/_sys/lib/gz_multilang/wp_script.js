@@ -23,6 +23,7 @@
 		$('.fl').click(function(){
 			var lang = $(this).attr('data-lang'); c.push(lang);
 			$.cookie('gz_lang',lang); c.push($.cookie('gz_lang')); console.log(c);
+			$.cookie('wp_lang',lang);
 			$('body').fadeOut('slow');
 		});
 	}

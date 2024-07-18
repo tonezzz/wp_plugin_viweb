@@ -10,14 +10,14 @@
 		<?php
 			//if(isset($_GET['d'])) { die('<pre>'.print_r(compact('footer_style','header_style'),true)); }
 			if($footer_slug = get_post_field( 'post_name', $footer_style )){
-				$footer_slug_lang = $footer_slug.'_'.$_COOKIE['gz_lang'];
-				$site_url = site_url($footer_slug_lang);
+				//$footer_slug_lang = $footer_slug.'_'.$_COOKIE['gz_lang'];
+				//$site_url = site_url($footer_slug_lang);
 				//if($footer_slug_id = url_to_postid( site_url($footer_slug_lang)) ) $footer_style = $footer_slug_id;
 				//bwp_footer
 				$args = [
 					'post_type'      => 'bwp_footer',
 					'posts_per_page' => 1,
-					'post_name__in'  => [$footer_slug_lang],
+				//	'post_name__in'  => [$footer_slug_lang],
 					'fields'         => 'ids' 
 				];
 				$q = get_posts( $args );

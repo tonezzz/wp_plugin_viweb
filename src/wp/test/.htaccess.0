@@ -1,0 +1,56 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteBase /test/
+
+    #RewriteCond %{QUERY_STRING} !(?:^|&)lang=(en|th)
+    #RewriteCond %{HTTP_COOKIE} gz_lang=(en|th)
+    #RewriteRule ^$ $1?gz_lang=%1 [P,L]
+
+    #RewriteRule ^(.*)$ $1?c=%1 [P,L]
+
+    #RewriteCond %{HTTP_COOKIE} (?:^|&)gz_lang=(en|th)
+    #RewriteRule ^(.*)$ $1?c=%{HTTP_COOKIE} [P,L]
+
+    #RewriteCond %{QUERY_STRING} (?:^|&)l=(en,th)
+    #RewriteRule !en/ /%1/ [QSD,R=302,L]
+
+    #RewriteCond %{HTTP_COOKIE} gz_lang=(.*)
+    #RewriteRule ^(.*)$ $1?%1 [L]
+    #RewriteRule ^(.*)$ $1?lang=%1 [P,L]
+
+    # Empty = th
+    #RewriteCond %{QUERY_STRING} ^$
+    #RewriteRule ^$ /?lang=th [L]
+
+    #RewriteCond %{HTTP_COOKIE} gz_lang=(.*)
+    #RewriteRule ^$ /%1 [P,L]
+    #RewriteRule ^$ /%1/$1 [R,L]
+
+    #RewriteCond %{HTTP_COOKIE} gz_lang=(.*)
+    #RewriteRule ^$ / [L]
+    #RewriteCond %{HTTP:Cookie} (^|;\ *)gz_lang=([^;\ ]+)
+    #RewriteRule ^$ /?lang=%2 [L]
+
+</IfModule>
+
+#RedirectMatch 302 /th https:\/\/thakarn.gizmo-thailand.com
+#RedirectMatch 302 /th/(.*) https:\/\/thakarn.gizmo-thailand.com/$2
+
+#RedirectMatch 302 /en https:\/\/thakarn.gizmo-thailand.com/?lang=en
+#RedirectMatch 302 /en/(.*) https:\/\/thakarn.gizmo-thailand.com/$2?lang=en
+
+#RewriteCond %{HTTP:Accept-Language} ^(en|be|uk|kk) [NC]
+#RewriteCond %{REQUEST_URI} ^/en/(.*)
+#RewriteRule (.*) /$1?lang=en [P,L,R=301]
+
+# Rewrite "/<lang>/<directory>/" to `/<directory>/index.php?lang=<lang>"
+#RewriteCond %{DOCUMENT_ROOT}/$2/index.php -f
+#RewriteRule ^([a-z]{2})/(.*?)/?$ $2/index.php?lang=$1 [L]
+
+# Rewrite "/<lang>/<directory>/<file>" to `/<directory>/<file>?lang=<lang>"
+#RewriteCond %{DOCUMENT_ROOT}/$2 -f
+#RewriteRule ^([a-z]{2})/(.+) $2?lang=$1 [L]
+
+#RedirectMatch 302 /(.*) https://thakarn.gizmo-thailand.com/$1?lang=th
+#RedirectMatch 302 /en/(.*) https://thakarn.gizmo-thailand.com/$1?lang=en
+#RedirectMatch 302 /th/(.*) https://thakarn.gizmo-thailand.com/$1?lang=th

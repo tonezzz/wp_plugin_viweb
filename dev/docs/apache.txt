@@ -1,0 +1,3 @@
+docker exec -i wp_plugin_viweb_apache apachectl -S
+docker exec -i wp_plugin_viweb_apache truncate /usr/local/apache2/logs/thakarn-ssl-error_log --size 0
+docker exec -i wp_plugin_viweb_apache truncate /usr/local/apache2/logs/thakarn-ssl-access_log --size 0

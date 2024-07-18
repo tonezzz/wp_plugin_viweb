@@ -1,0 +1,45 @@
+<IfModule mod_rewrite.c>
+    Options +FollowSymLinks
+    RewriteEngine on
+    RewriteBase /en
+
+    #RewriteCond %{REQUEST_URI} ^/en/ [NC]
+    #RewriteCond %{QUERY_STRING} !(?:^|&)lang=(en|th) [NC]
+    #RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/$1?%{QUERY_STRING}&lang=en&redirect=0 [P]
+    #RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/test/index.php?%{QUERY_STRING}&lang=en&redirect=0 [P]
+    # https://thakarn.gizmo-thailand.com/en/shop/
+    # https://thakarn.gizmo-thailand.com/en/shop/glove/uv-reflect-glove-black/
+
+    #RewriteRule ^(.*)$ /test/index.php [P]
+    #RewriteRule ^(.*)$ http:\/\/%{HTTP_HOST}/test/index.php?lang=th&a=%1&b=$1&c=%{REQUEST_URI} [P]
+    #RewriteRule ^(.*)$ /test/index.php?lang=th&a=%1&b=$1&c=%{REQUEST_URI} [L]
+    #RewriteRule ^(.*)$ /%1?lang=th [P,L]
+    
+    #?lang=en [P,L]
+
+    #RewriteCond %{REQUEST_URI} ^/en/(.*)$
+    #RewriteRule ^/en/(.*)$ /$1?lang=en?xx=%{REQUEST_URI} [P,L]
+
+</IfModule>
+
+#RedirectMatch 302 /th https:\/\/thakarn.gizmo-thailand.com
+#RedirectMatch 302 /th/(.*) https:\/\/thakarn.gizmo-thailand.com/$2
+
+#RedirectMatch 302 /en https:\/\/thakarn.gizmo-thailand.com/?lang=en
+#RedirectMatch 302 /en/(.*) https:\/\/thakarn.gizmo-thailand.com/$2?lang=en
+
+#RewriteCond %{HTTP:Accept-Language} ^(en|be|uk|kk) [NC]
+#RewriteCond %{REQUEST_URI} ^/en/(.*)
+#RewriteRule (.*) /$1?lang=en [P,L,R=301]
+
+# Rewrite "/<lang>/<directory>/" to `/<directory>/index.php?lang=<lang>"
+#RewriteCond %{DOCUMENT_ROOT}/$2/index.php -f
+#RewriteRule ^([a-z]{2})/(.*?)/?$ $2/index.php?lang=$1 [L]
+
+# Rewrite "/<lang>/<directory>/<file>" to `/<directory>/<file>?lang=<lang>"
+#RewriteCond %{DOCUMENT_ROOT}/$2 -f
+#RewriteRule ^([a-z]{2})/(.+) $2?lang=$1 [L]
+
+#RedirectMatch 302 /(.*) https://thakarn.gizmo-thailand.com/$1?lang=th
+#RedirectMatch 302 /en/(.*) https://thakarn.gizmo-thailand.com/$1?lang=en
+#RedirectMatch 302 /th/(.*) https://thakarn.gizmo-thailand.com/$1?lang=th

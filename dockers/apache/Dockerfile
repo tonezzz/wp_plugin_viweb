@@ -20,10 +20,7 @@ RUN a2enmod http2
 #    --dry-run \
 #--apache \
 #--apache-vhost-root \
-#docker exec -i wp_plugin_viweb_apache apt update && apt install -y certbot python3-certbot-apache lynx
 #certbot --apache -d thakarn.gizmo-thailand.com --email tonezzz@hotmail.com -n --agree-tos --webroot-path /usr/local/apache2/htdocs
-#docker exec -i wp_plugin_viweb_apache ls /home/nc-user/wp_plugin_viweb/persistent-data/uploads
-#certbot --apache -d thakarn.gizmo-thailand.com --email tonezzz@hotmail.com
 #docker exec -i wp_plugin_viweb_apache cat /usr/local/apache2/conf/extra/httpd-vhosts.conf
 #docker exec -i wp_plugin_viweb_apache certbot --test-cert -d thakarn.gizmo-thailand.com
 #docker exec -i wp_plugin_viweb_apache certbot install --certname thakarn.gizmo-thailand.com
