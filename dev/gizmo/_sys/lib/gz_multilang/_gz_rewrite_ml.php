@@ -68,7 +68,7 @@ class gz_rewrite_ml {
   }
 
     public static function get_supported_langs() {
-        return apply_filters('gz_rewrite_ml_support_langs', ['en','aa']);
+        return apply_filters('gz_rewrite_ml_support_langs', ['en']);
     }
 
     public static function get_default_lang(){
@@ -223,10 +223,13 @@ class gz_rewrite_ml {
     // determine the default language url. this could be based on the current
     // language the user has selected on the frontend, or based on the current
     // url, or based on the post itself. it is up to you
-    $lang = self::get_default_post_lang($post);
+    $lang = self::get_default_post_lang($post); //die($lang);
+
+    //Default lang 'th' need no url prefix.
+    if('th'==$lang) { $rp = '/'; $lang = ''; } else { $rp = ''; }
 
     // once you have the default language, it is a simple search and replace
-    return str_replace('%gz_lang%', $lang, $permalink);
+    return str_replace('%gz_lang%'.$rp, $lang, $permalink);
     //if(isset($_GET['d'])) {ob_clean(); die("<pre>".print_r(compact('permalink','lang','post'),true)); }
 }
 

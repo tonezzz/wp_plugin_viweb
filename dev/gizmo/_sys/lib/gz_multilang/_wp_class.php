@@ -1,10 +1,12 @@
 <?php //die(dirname(__FILE__));
-if(isset($_GET['drw'])) {
-	echo '<a href="/en/?drw">/en/</a>';
+if(0||isset($_GET['drw'])) {
+    function gen_link($url){ echo "<a href='{$url}'>{$url}</a>"; }
+	gen_link("/en/?drw");
 	global $wp_query,$wp_rewrite;
 	ob_clean(); die("<pre>".print_r([
-		'xx'			=> 'xx',
+		#'xx'			=> 'xx',
 		'__FILE__'      => __FILE__,
+		#'gz_lang'   => $_GET['gz_lang'],
 		'SERVER_NAME'   => $_SERVER['SERVER_NAME'],
 		'REQUEST_URI'   => $_SERVER['REQUEST_URI'],
 		'QUERY_STRING'  => $_SERVER['QUERY_STRING'],
@@ -94,8 +96,7 @@ class gz_multilang extends gz_tpl{
 				//['prm'=>['woocommerce_before_main_content','woocommerce_breadcrumb',20]],
 			],
 			'filters' => [
-				//['prm'=>['query_vars',[$this,'public_query_vars']]],
-				//['prm'=>['wp_redirect',[$this,'redirect_ml']]],
+				//['prm'=>['redirect_canonical',[$this,'redirect_canonical']]],
 				['prm'=>['wp_nav_menu_objects',[$this,'wp_nav_menu_ml'],10,2]],
 				['prm'=>['the_title',[$this,'the_title'],10,2]],
 				['prm'=>['the_content',[$this,'the_content'],20,2]],
@@ -126,7 +127,6 @@ class gz_multilang extends gz_tpl{
 				//['prm'=>['wpautop','wpautop']],
 			],
 			'actions' => [
-				//['prm'=>['init',[$this,'rewrite_ml']]],
 				['prm'=>['wp_footer',[$this,'footer_ml'],20]],
 				['prm'=>['template_redirect',[$this,'init_ml']]],	//Init multi lang when everything is loaded.
 				//['prm'=>['get_footer',[$this,'get_footer']]],
@@ -136,10 +136,12 @@ class gz_multilang extends gz_tpl{
 			],
 		];
 		parent::__construct($config);
-		//header("gz_url: ".$_SERVER['REQUEST_URI']);
-		//header("lang: ".isset($_GET['lang'])?$_GET['lang']:'No');
-		//header("gz_lang: " . ($_SERVER['REQUEST_URI']) );
-		//if(isset($_GET['dv'])) {ob_clean(); die("<pre>".print_r($_SERVER,true)); }
+	}
+
+	function redirect_canonical($redirect_url){//die($redirect_url);
+		$loc = "https://thakarn.gizmo-thailand.com/en/";
+		if(str_contains($redirect_url,'y=index.php')) { return $loc; }
+		return $redirect_url;
 	}
 
 	function init_modules(){
@@ -148,20 +150,8 @@ class gz_multilang extends gz_tpl{
 		//gz_rewrite_ml is init as a static class
 	}
 	
-	function gz_rewrite_ml_support_langs($langs){ return array_unique(['th','en','gr']); }
+	function gz_rewrite_ml_support_langs($langs){ return array_unique(['en']); }
 	function gz_rewrite_ml_default_lang($langs){ return 'th'; }
-
-	function public_query_vars($qv){
-		$qv[] = 'redirect';
-		return $qv;
-	}
-
-	function redirect_ml($location){ //die(__FILE__);
-		$redirect = get_query_var('redirect');
-		//if(isset($_GET['d'])) {ob_clean(); die("<pre>".print_r(compact('location','redirect'),true)); }
-		if (!empty($redirect)) return false;
-		return $location;
-	}
 
 	function wp_list_categories_ml($args){ //echo "xx";
 		//if(isset($_GET['d'])) {ob_clean(); die("<pre>".print_r(compact('args'),true)); }
@@ -169,18 +159,6 @@ class gz_multilang extends gz_tpl{
 
 	function init_ml(){//die(__FILE__);
 		if(is_admin() ) return;
-		if(isset($_GET['drwml'])) {global $wp_query,$wp_rewrite; ob_clean(); die("<pre>".print_r([
-			//'$_SERVER' => $_SERVER,
-			'$_COOKIE' => $_COOKIE,
-			'gz_lang' => get_query_var('gz_lang'),
-			'get_supported_langs' => gz_rewrite_ml::get_supported_langs(),
-			'get_default_lang' => gz_rewrite_ml::get_default_lang(),
-			'current_action' => current_action(),
-			'_GET' => $_GET,
-			'wp_rewrite' => $wp_rewrite,
-			'wp_query' => $wp_query,
-		],true)); }
-
 		$lang=$this->get_lang(); $this->set_lang($lang); //If lang is not set, set to "th"
 	}
 	
@@ -192,7 +170,8 @@ class gz_multilang extends gz_tpl{
 	}
 	
 	function get_lang(){
-		$gz_lang = isset($_COOKIE['gz_lang'])?$_COOKIE['gz_lang']:'th';
+		if(isset($_GET['gz_lang'])) $gz_lang = $_GET['gz_lang'];
+		else $gz_lang = 'th';
 		return $gz_lang;
 	}
 	function get_current_lang(){return $this->get_lang();}
