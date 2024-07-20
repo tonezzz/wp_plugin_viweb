@@ -1,3 +1,20 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+#RewriteRule ^/(th|en|fr)(.*) /$2?gz_lang=$1&xx=xx
+
+#RewriteCond %{REQUEST_URI} ^(.*)$ [NC]
+#RewriteRule ^(.*)$ /$1?gz_lang=$1&xx=xx
+#RewriteRule ^/(th|en|fr)/(.*)$ /$2?gz_lang=$1&xx=xx
+
+#RewriteCond %{REQUEST_URI} ^/(th|en|fr)/ [NC]
+#RewriteRule ^(.*)$ $1?gz_lang=set_%1_$1 [QSA]
+#RewriteRule ^(.*)$ - [CO=gz_lang:set_%1_$1:%{SERVER_NAME}:86400]
+
+
+#For testing
+</IfModule>
 
 # Add SVG Mime Types
 AddType image/svg+xml svg

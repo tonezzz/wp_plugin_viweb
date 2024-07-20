@@ -1,37 +1,3 @@
-<IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteBase /
-
-RewriteRule ^/(th|en|fr)(.*) /$2?gz_lang=$1&xx=xx
-
-#RewriteCond %{REQUEST_URI} ^(.*)$ [NC]
-#RewriteRule ^(.*)$ /$1?gz_lang=$1&xx=xx
-#RewriteRule ^/(th|en|fr)/(.*)$ /$2?gz_lang=$1&xx=xx
-
-#RewriteCond %{REQUEST_URI} ^/(th|en|fr)/ [NC]
-#RewriteRule ^(.*)$ $1?gz_lang=set_%1_$1 [QSA]
-#RewriteRule ^(.*)$ - [CO=gz_lang:set_%1_$1:%{SERVER_NAME}:86400]
-
-#RewriteCond %{REQUEST_URI} ^/(th|en|fr)/ [NC]
-#RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/test?uri=$1&urix=%1&gz_lang=%1&redirect=0 [CO=gz_lang:%{SERVER_NAME}:86400:,P]
-
-#RewriteCond %{REQUEST_URI} ^(en)/ [NC]
-#RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/test?uri=$1&urixx=%1&gz_lang=%1&redirect=0 [CO=gz_lang:xx%1:%{SERVER_NAME}:86400:,P]
-#RewriteRule ^/(en)/(.*)$ - [CO=test:$1_%1:%{SERVER_NAME}:86400]
-
-#RewriteCond %{REQUEST_URI} !^/index.html [NC]
-#RewriteCond %{REQUEST_URI} !^/test/ [NC]
-#RewriteRule ^(.*)$ https:\/\/%{SERVER_NAME}/test?uri=$1&urix=%1&gz_lang=%1&redirect=0&%{QUERY_STRING} [CO=gz_lang:test_%1_$1:%{SERVER_NAME}:86400:,P]
-
-#RewriteCond %{REQUEST_URI} !^/(en|th!fr)/ [NC]
-
-#RewriteRule ^(.*)$ - [CO=gz_lang:xx]
-#RewriteCond %{REQUEST_URI} ^(th|en|fr)/ [NC]
-#RewriteRule ^(.*)$ - [CO=gz_lang:xx]
-
-#For testing
-</IfModule>
-
 # Add SVG Mime Types
 AddType image/svg+xml svg
 AddType image/svg+xml svgz

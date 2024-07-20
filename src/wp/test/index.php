@@ -8,8 +8,10 @@ $data = [
     '_COOKIE'       => $_COOKIE,
     '_SERVER'       =>  $_SERVER,
 ];
-echo '<a href="/en/">/en/?drw</a>';
+gen_link("/en/?drw");
 echo '<pre>'.print_r($data,true).'</pre>';
+
+function gen_link($url){ echo "<a href='{$url}'>{$url}</a>"; }
 
 #echo '<pre>'.print_r($_SERVER['REQUEST_URI'],true).'</pre>';
 #echo '<pre>'.print_r($_SERVER['QUERY_STRING'],true).'</pre>';

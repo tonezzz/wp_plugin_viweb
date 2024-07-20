@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    DirectoryIndex index.php
+    RewriteEngine on
+    RewriteBase /
+
+    RewriteCond %{REQUEST_URI} ^/(th|en|fr)/(.*) [NC]
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1?gz_lang=%1&drwx&x=$1 [P]
+    #RewriteRule ^(.*)$ http:\/\/%{HTTP_HOST}/test/?a=%1&b=$1&c=%{REQUEST_URI}&url=$1 [P]
+    #RewriteRule . /index.php [L]
+
+</IfModule>
