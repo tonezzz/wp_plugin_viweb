@@ -32,9 +32,9 @@ die
 
 global $gz_locale;
 
-require dirname(__FILE__)."/_gz_rewrite_ml.php";
-require dirname(__FILE__)."/_gz_menu_ml.php";
-require dirname(__FILE__)."/_gz_quickedit_ml.php";
+//require dirname(__FILE__)."/_gz_rewrite_ml.php";
+//require dirname(__FILE__)."/_gz_menu_ml.php";
+//require dirname(__FILE__)."/_gz_quickedit_ml.php";
 
 class gz_multilang extends gz_tpl{
 	public $the_content_off=false;
@@ -54,6 +54,7 @@ class gz_multilang extends gz_tpl{
 				]]]
 			],
 			'cmb2v2' => [
+				/*
 				['prm'=> [
 					'id'					=> 'qen',
 					'title' 				=> __('English',$this->text_domain),
@@ -86,6 +87,7 @@ class gz_multilang extends gz_tpl{
 						]
 					],
 				],
+				*/
 			],
   		   	'ajaxes' => [
 			],
@@ -97,6 +99,7 @@ class gz_multilang extends gz_tpl{
 			],
 			'filters' => [
 				//['prm'=>['redirect_canonical',[$this,'redirect_canonical']]],
+				/*
 				['prm'=>['wp_nav_menu_objects',[$this,'wp_nav_menu_ml'],10,2]],
 				['prm'=>['the_title',[$this,'the_title'],10,2]],
 				['prm'=>['the_content',[$this,'the_content'],20,2]],
@@ -105,6 +108,7 @@ class gz_multilang extends gz_tpl{
 				['prm'=>['locale',[$this,'get_locale']],10,1],
 				['prm'=>['gz_rewrite_ml_support_langs',[$this,'gz_rewrite_ml_support_langs']],10,1],
 				['prm'=>['gz_rewrite_ml_default_lang',[$this,'gz_rewrite_ml_default_lang']],10,1],
+				*/
 				//['prm'=>['wp_list_categories',[$this,'wp_list_categories_ml']],10,2],
 				//['prm'=>['get_taxonomy',[$this,'get_term_ml'],10,2]],
 				//['prm'=>['get_the_excerpt',[$this,'get_the_excerpt'],21,2]],
@@ -127,12 +131,14 @@ class gz_multilang extends gz_tpl{
 				//['prm'=>['wpautop','wpautop']],
 			],
 			'actions' => [
+				/*
 				['prm'=>['wp_footer',[$this,'footer_ml'],20]],
 				['prm'=>['template_redirect',[$this,'init_ml']]],	//Init multi lang when everything is loaded.
 				//['prm'=>['get_footer',[$this,'get_footer']]],
 				//['prm'=>['init',[$this,'load_translations']]],
 				['prm'=>['admin_menu',[$this,'admin_menu']]],
 				['prm'=>['init',[$this,'init_modules']]],
+				*/
 			],
 		];
 		parent::__construct($config);

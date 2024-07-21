@@ -1,31 +1,19 @@
 (function($){
 	$('document').ready(function(){
-		console.log($.cookie('gz_lang'));
-		//test_cookie();
 		init_menu_lang();
 		//init_tinymce_block();
 	});
 
-	function test_cookie(){
-		var c=[];
-		c.push($.cookie('gz_lang'));
-		$.cookie('gz_lang','th')
-		c.push($.cookie('gz_lang'));
-		console.log(c);
-	}
-
 	function init_menu_lang(){
-		var c=[]; c.push($.cookie('gz_lang'));
-		var lang = $.cookie('gz_lang');
+		var lang = location.pathname.split("/")[1]; if('en'!==lang) lang='th';
+		//Highlight flag
 		$('.fl').css({ opacity: .5 });
 		$('.fl.'+lang).css({ opacity: 1 });
-		//$('.gz_menu_lang_switcher').html(gz_multilang.menu_lang);
-		$('.fl').click(function(){
-			var lang = $(this).attr('data-lang'); c.push(lang);
-			$.cookie('gz_lang',lang); c.push($.cookie('gz_lang')); console.log(c);
-			$.cookie('wp_lang',lang);
-			$('body').fadeOut('slow');
-		});
+		//Gen url
+		var url = location.pathname.replace('/en/','/');
+		url.replace('/en/','/');
+		$('.fl.en').attr('href','/en'+url)
+		$('.fl.th').attr('href',''+url)
 	}
 
 	function init_tinymce_block(){
