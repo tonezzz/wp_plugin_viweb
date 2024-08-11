@@ -1,21 +1,10 @@
-version: "3.8"
-
 services:
   apache:
-    #image: httpd:2.4
     build:
       context: ./dockers/apache
       dockerfile: Dockerfile
     container_name: ${PROJECT_NAME}_apache
     mem_limit: 512m
-    #entrypoint: []
-    #command:
-    #  - /bin/bash
-    #  - -c
-    #  - |
-    #    apt update
-    #    apt install -y certbot python3-certbot-apache lynx
-    #    httpd -D FOREGROUND
     ports:
       - "80:80"
       - "443:443"

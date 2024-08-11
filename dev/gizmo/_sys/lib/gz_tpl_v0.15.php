@@ -33,7 +33,7 @@ v0.00 - 20170510:Tony
 */
 class gz_tpl{
 	protected $id = __CLASS__;
-	protected $url,$dir,$full_url;			//Using relative url here
+	protected $url,$dir,$url_full;			//Using relative url here
 	protected $post=false ,$metas=false;
 	protected $scripts = false;
 	protected $admin_scripts = false;

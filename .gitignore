@@ -1,3 +1,21 @@
+# Temporary files. No backup.
+/tmp/*
+
+# Local files. Local backup.
+/local/*
+
+# Share files. Local backup.
+#/src/*
+
+# Share files. Git backup.
+#/dev/*
+
+# Backup files. No backup.
+/bak/*
+
+#####################
+
+
 docker-ut.yml
 /tmp
 /persistent-data/letsencrypt
